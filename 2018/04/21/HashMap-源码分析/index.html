@@ -71,7 +71,9 @@
 </ul>
 <p><strong>底层结构</strong></p>
 <p>底层结构采用了数组，而数组的每一个元素都是多个 Node 构成的链表，当数组超过 threshold 时，数组将会扩容。</p>
-<p>数组中的每一个都相当于一个单向链表，key 通过 hash() 后，相同的键值对会加入到链表中，当桶中的数过多时（链表长度 &gt; 8），将会转化为 红黑树，相比与Jdk 1.7， Jdk 1.8 中当链表过长时，链表转化为红黑树，在维护红黑树时，最坏情况下查找的时间复杂度为 O(log n)，比起单链表的 O(1) ~ O(n), 时间复杂度降低了，但所需要维护的空间占用却更多。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 哈希数组桶，根据 key 的 hashCode 通过 hash() 得到数组下标</span><br><span class="line">transient Node&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line">// 结构最大数据量，即 Node 的最大值，由 loadFactor(o.75) * length(16) 得到 </span><br><span class="line">int threshold;</span><br><span class="line"></span><br><span class="line">// 负载因子</span><br><span class="line">final float loadFactor;</span><br><span class="line"></span><br><span class="line">// 桶中的 Node 节点</span><br><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    final int hash;</span><br><span class="line">    final K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数组中的每一个都相当于一个单向链表，key 通过 hash() 后，相同的键值对会加入到链表中，当桶中的数过多时（链表长度 &gt; 8），将会转化为 红黑树，相比与Jdk 1.7， Jdk 1.8 中当链表过长时，链表转化为红黑树，在维护红黑树时，最坏情况下查找的时间复杂度为 O(log n)，比起单链表的 O(1) ~ O(n), 时间复杂度降低了，但所需要维护的空间占用却更多。</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 哈希数组桶，根据 key 的 hashCode 通过 hash() 得到数组下标</span><br><span class="line">transient Node&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line">// 结构最大数据量，即 Node 的最大值，由 loadFactor(o.75) * length(16) 得到 </span><br><span class="line">int threshold;</span><br><span class="line"></span><br><span class="line">// 负载因子</span><br><span class="line">final float loadFactor;</span><br><span class="line"></span><br><span class="line">// 桶中的 Node 节点</span><br><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    final int hash;</span><br><span class="line">    final K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>哈希映射 &amp; 表大小</strong></p>
 <p>hash() – 取得 key 的 hashCode 值，依次进行 高位运算，取模运算</p>
 <p>tableSizeFor() – 返回大于参数且最接近 2 的整数幂的数值</p>
@@ -102,11 +104,11 @@
             <div>
               tags: 
   <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
+  { <a href="/tags/HashMap/">HashMap</a> }
   </li>
 
   <li class="meta-text">
-  { <a href="/tags/HashMap/">HashMap</a> }
+  { <a href="/tags/Java/">Java</a> }
   </li>
 
 
