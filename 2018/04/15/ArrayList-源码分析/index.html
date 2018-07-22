@@ -1,68 +1,59 @@
 <!DOCTYPE html>
-<html lang="zh-cmn-Hans">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="utf-8">
+  
   <title>ArrayList 源码分析 | Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：它是不安全的。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。 ArrayList 与 Array 区别： Array 包含的是基本类型和对象类型，而ArrayList 只能包含对">
+<meta name="keywords" content="ArrayList,Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayList 源码分析">
+<meta property="og:url" content="http://home.sise.com/2018/04/15/ArrayList-源码分析/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：它是不安全的。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。 ArrayList 与 Array 区别： Array 包含的是基本类型和对象类型，而ArrayList 只能包含对">
+<meta property="og:updated_time" content="2018-04-15T12:50:23.650Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArrayList 源码分析">
+<meta name="twitter:description" content="ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：它是不安全的。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。 ArrayList 与 Array 区别： Array 包含的是基本类型和对象类型，而ArrayList 只能包含对">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
   
   
-  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="/css/style.css">
+  
+
 </head>
-
 <body>
-<div class="Shell">
-    <aside class='SideBar'>
-    <section class='avatar' style="background-image: url(/assets/background.jpg)">
-        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
-        </div>
-    </section>
-    <section class='menu'>
-        <div>Heiku</div>
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main"><article id="post-ArrayList-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
         
-        <ul>
-          
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
-          
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
-          
-            <a href="/tags" class="Btn">
-              <li>Tags</li>
-            </a>  
-          
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
-          
-        </ul>
-    </section>
-    <section class="media">
-        
-            
-                <a href="https://github.com/Heiku">
-                    <img src="/assets/github.svg" />
-                </a>
-            
-        
-    </section>
-</aside>
+  
+    <h1 class="article-title" itemprop="name">
+      ArrayList 源码分析
+    </h1>
+  
 
-    <div class="container">
-        <div data-pager-shell>
-            <div>
-  <article class='ContentView'>
-    <header class='PageTitle'>
-        <h1>ArrayList 源码分析</h1>
-    </header>
-
-    <section>
-      <p>ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：<strong>它是不安全的</strong>。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。</p>
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/04/15/ArrayList-源码分析/" class="article-date">
+  <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">2018-04-15</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：<strong>它是不安全的</strong>。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。</p>
 <h3 id="ArrayList-与-Array-区别："><a href="#ArrayList-与-Array-区别：" class="headerlink" title="ArrayList 与 Array 区别："></a>ArrayList 与 Array 区别：</h3><ul>
 <li>Array 包含的是基本类型和对象类型，而ArrayList 只能包含对象类型</li>
 <li>Array 的大小的是固定的，所以在定义数组的时候尽量确定需要的数组大小，而ArrayList 的大小是动态变化的，当容量不足时能自动扩容</li>
@@ -106,54 +97,89 @@
 <p><strong>排序</strong> (ArrayList的排序采用的是Array的并归排序)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> *  采用array的排序方式：并归排序</span><br><span class="line"> */</span><br><span class="line">@Override</span><br><span class="line">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">public void sort(Comparator&lt;? super E&gt; c) &#123;</span><br><span class="line">    final int expectedModCount = modCount;</span><br><span class="line">    Arrays.sort((E[]) elementData, 0, size, c);</span><br><span class="line">    if (modCount != expectedModCount) &#123;</span><br><span class="line">        throw new ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public static &lt;T&gt; void sort(T[] a, int fromIndex, int toIndex,</span><br><span class="line">                            Comparator&lt;? super T&gt; c) &#123;</span><br><span class="line">    if (c == null) &#123;</span><br><span class="line">        sort(a, fromIndex, toIndex);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        rangeCheck(a.length, fromIndex, toIndex);</span><br><span class="line">        if (LegacyMergeSort.userRequested)</span><br><span class="line">            legacyMergeSort(a, fromIndex, toIndex, c);</span><br><span class="line">        else</span><br><span class="line">            TimSort.sort(a, fromIndex, toIndex, c, null, 0, 0);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static &lt;T&gt; void legacyMergeSort(T[] a, int fromIndex, int toIndex,</span><br><span class="line">                                        Comparator&lt;? super T&gt; c) &#123;</span><br><span class="line">    T[] aux = copyOfRange(a, fromIndex, toIndex);</span><br><span class="line">    if (c==null)</span><br><span class="line">        mergeSort(aux, a, fromIndex, toIndex, -fromIndex);</span><br><span class="line">    else</span><br><span class="line">        mergeSort(aux, a, fromIndex, toIndex, -fromIndex, c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@SuppressWarnings(&#123;&quot;unchecked&quot;, &quot;rawtypes&quot;&#125;)</span><br><span class="line">private static void mergeSort(Object[] src,</span><br><span class="line">                              Object[] dest,</span><br><span class="line">                              int low,</span><br><span class="line">                              int high,</span><br><span class="line">                              int off) &#123;</span><br><span class="line">    int length = high - low;</span><br><span class="line"></span><br><span class="line">    // Insertion sort on smallest arrays</span><br><span class="line">    if (length &lt; INSERTIONSORT_THRESHOLD) &#123;</span><br><span class="line">        for (int i=low; i&lt;high; i++)</span><br><span class="line">            for (int j=i; j&gt;low &amp;&amp;</span><br><span class="line">                     ((Comparable) dest[j-1]).compareTo(dest[j])&gt;0; j--)</span><br><span class="line">                swap(dest, j, j-1);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Recursively sort halves of dest into src</span><br><span class="line">    int destLow  = low;</span><br><span class="line">    int destHigh = high;</span><br><span class="line">    low  += off;</span><br><span class="line">    high += off;</span><br><span class="line">    int mid = (low + high) &gt;&gt;&gt; 1;</span><br><span class="line">    mergeSort(dest, src, low, mid, -off);</span><br><span class="line">    mergeSort(dest, src, mid, high, -off);</span><br><span class="line"></span><br><span class="line">    // If list is already sorted, just copy from src to dest.  This is an</span><br><span class="line">    // optimization that results in faster sorts for nearly ordered lists.</span><br><span class="line">    if (((Comparable)src[mid-1]).compareTo(src[mid]) &lt;= 0) &#123;</span><br><span class="line">        System.arraycopy(src, low, dest, destLow, length);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Merge sorted halves (now in src) into dest</span><br><span class="line">    for(int i = destLow, p = low, q = mid; i &lt; destHigh; i++) &#123;</span><br><span class="line">        if (q &gt;= high || p &lt; mid &amp;&amp; ((Comparable)src[p]).compareTo(src[q])&lt;=0)</span><br><span class="line">            dest[i] = src[p++];</span><br><span class="line">        else</span><br><span class="line">            dest[i] = src[q++];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
       
 
-    </section>
+      
+        
+    </div>
+  </div>
+  
     
-      <section class='ArticleMeta'>
-          <div>
-            发布于&nbsp;
-            <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">
-              2018-04-15
-            </time>
-          </div>
-          
-            <div>
-              tags: 
-  <li class="meta-text">
-  { <a href="/tags/ArrayList/">ArrayList</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
-  </li>
-
-
-            </div>
-          
-      </section>
-    
-    
-</article>
+<nav id="article-nav">
+  
+    <a href="/2018/04/21/HashMap-源码分析/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          HashMap 源码分析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/10/new-blog/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">新博客 启动</div>
+    </a>
+  
+</nav>
 
   
-</div>
+</article>
 
-            <footer>
-    <div>© 2016 - John Doe </div>
-    <div>
-    Powered by Hexo
-    </div>
+
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/hejianxian" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
+</aside>
+
+      </div>
+      <footer id="footer">
+  
+	<div id="footer-info" class="inner">
+	  &copy; 2018 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
 </footer>
 
-        </div>
     </div>
-</div>
-<script src="/js/pager/dist/singlepager.js"></script>
-<script>
-var sp = new Pager('data-pager-shell')
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/hejianxian" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
 
-</script>
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
 </body>
 </html>

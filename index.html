@@ -1,127 +1,98 @@
 <!DOCTYPE html>
-<html lang="zh-cmn-Hans">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="utf-8">
+  
   <title>Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="选择热爱">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Heiku">
+<meta property="og:url" content="http://home.sise.com/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="选择热爱">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Heiku">
+<meta name="twitter:description" content="选择热爱">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
   
   
-  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="/css/style.css">
+  
+
 </head>
-
 <body>
-<div class="Shell">
-    <aside class='SideBar'>
-    <section class='avatar' style="background-image: url(/assets/background.jpg)">
-        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
-        </div>
-    </section>
-    <section class='menu'>
-        <div>Heiku</div>
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-使用位运算替代-运算符" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
         
-        <ul>
-          
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
-          
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
-          
-            <a href="/tags" class="Btn">
-              <li>Tags</li>
-            </a>  
-          
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
-          
-        </ul>
-    </section>
-    <section class="media">
-        
-            
-                <a href="https://github.com/Heiku">
-                    <img src="/assets/github.svg" />
-                </a>
-            
-        
-    </section>
-</aside>
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/21/使用位运算替代-运算符/">使用位运算替代+-运算符</a>
+    </h1>
+  
 
-    <div class="container">
-        <div data-pager-shell>
-            <ul class="Index">
-  
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/05/21/使用位运算替代-运算符/" class="article-date">
+  <time datetime="2018-05-21T07:56:13.000Z" itemprop="datePublished">2018-05-21</time>
+</a>
       
-        <h1>
-          <a href="/2018/05/21/使用位运算替代-运算符/">使用位运算替代+-运算符</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-05-21T07:56:13.000Z" itemprop="datePublished">
-    2018-05-21
-  </time>
-  
-  
-</div>
-
-    </header>
-    <div>
+    </div>
+    <div class="article-entry" itemprop="articleBody">
       
         <h4 id="最近在刷-LeetCode-时，看到一道关于位运算的算法题"><a href="#最近在刷-LeetCode-时，看到一道关于位运算的算法题" class="headerlink" title="最近在刷 LeetCode 时，看到一道关于位运算的算法题"></a>最近在刷 LeetCode 时，看到一道关于位运算的算法题</h4><p><a href="https://leetcode-cn.com/problems/sum-of-two-integers" target="_blank" rel="noopener">不使用运算符 + 和-，计算两整数a 、b之和</a> 归根到底，就是运用计算机底层原理，通过位运算进行运算。</p>
 <p><strong>加法</strong><br>思路：用异运算构造两个数的和（不包含进位），用与运算再左移构造两者和的进位数，通过递归直到不进位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public int getSum(int a, int b) &#123;</span><br><span class="line">        if (b == 0)&#123;</span><br><span class="line">            return a;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        int sum = a ^ b;</span><br><span class="line">        int carry = (a &amp; b) &lt;&lt; 1;</span><br><span class="line"></span><br><span class="line">        return getSum(sum, carry);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
         
-          <div class="more-link">
-            <a href="/2018/05/21/使用位运算替代-运算符/#more">Read On »</a>
-          </div>
+          <p class="article-more-link">
+            <a href="/2018/05/21/使用位运算替代-运算符/#more">More...</a>
+          </p>
         
       
+
+      
+        
     </div>
+  </div>
+  
 </article>
 
-    </li>
+
+
   
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2018/04/21/HashMap-源码分析/">HashMap 源码分析</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-04-21T12:51:58.000Z" itemprop="datePublished">
-    2018-04-21
-  </time>
+    <article id="post-HashMap-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
   
-  | 
-  <ul>
+  <div class="article-inner">
     
-  <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/HashMap/">HashMap</a> }
-  </li>
-
-
-  </ul>
+      <header class="article-header">
+        
   
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/21/HashMap-源码分析/">HashMap 源码分析</a>
+    </h1>
   
-</div>
 
-    </header>
-    <div>
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/04/21/HashMap-源码分析/" class="article-date">
+  <time datetime="2018-04-21T12:51:58.000Z" itemprop="datePublished">2018-04-21</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
       
         <p><strong>特征</strong></p>
 <ul>
@@ -134,48 +105,43 @@
 <p>底层结构采用了数组，而数组的每一个元素都是多个 Node 构成的链表，当数组超过 threshold 时，数组将会扩容。</p>
 <p>数组中的每一个都相当于一个单向链表，key 通过 hash() 后，相同的键值对会加入到链表中，当桶中的数过多时（链表长度 &gt; 8），将会转化为 红黑树，相比与Jdk 1.7， Jdk 1.8 中当链表过长时，链表转化为红黑树，在维护红黑树时，最坏情况下查找的时间复杂度为 O(log n)，比起单链表的 O(1) ~ O(n), 时间复杂度降低了，但所需要维护的空间占用却更多。</p>
         
-          <div class="more-link">
-            <a href="/2018/04/21/HashMap-源码分析/#more">Read On »</a>
-          </div>
+          <p class="article-more-link">
+            <a href="/2018/04/21/HashMap-源码分析/#more">More...</a>
+          </p>
         
       
+
+      
+        
     </div>
+  </div>
+  
 </article>
 
-    </li>
+
+
   
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2018/04/15/ArrayList-源码分析/">ArrayList 源码分析</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">
-    2018-04-15
-  </time>
+    <article id="post-ArrayList-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
   
-  | 
-  <ul>
+  <div class="article-inner">
     
-  <li class="meta-text">
-  { <a href="/tags/ArrayList/">ArrayList</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
-  </li>
-
-
-  </ul>
+      <header class="article-header">
+        
   
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/15/ArrayList-源码分析/">ArrayList 源码分析</a>
+    </h1>
   
-</div>
 
-    </header>
-    <div>
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/04/15/ArrayList-源码分析/" class="article-date">
+  <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">2018-04-15</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
       
         <p>ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：<strong>它是不安全的</strong>。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。</p>
 <h3 id="ArrayList-与-Array-区别："><a href="#ArrayList-与-Array-区别：" class="headerlink" title="ArrayList 与 Array 区别："></a>ArrayList 与 Array 区别：</h3><ul>
@@ -186,70 +152,111 @@
 <hr>
 <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt;</span><br><span class="line">        implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
         
-          <div class="more-link">
-            <a href="/2018/04/15/ArrayList-源码分析/#more">Read On »</a>
-          </div>
+          <p class="article-more-link">
+            <a href="/2018/04/15/ArrayList-源码分析/#more">More...</a>
+          </p>
         
       
+
+      
+        
     </div>
+  </div>
+  
 </article>
 
-    </li>
+
+
   
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2018/03/10/new-blog/">新博客 启动</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-03-10T01:58:26.000Z" itemprop="datePublished">
-    2018-03-10
-  </time>
+    <article id="post-new-blog" class="article article-type-post" itemscope itemprop="blogPost">
   
-  | 
-  <ul>
+  <div class="article-inner">
     
-  <li class="meta-text">
-  { <a href="/tags/New-blog/">New blog</a> }
-  </li>
-
-
-  </ul>
+      <header class="article-header">
+        
   
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/10/new-blog/">新博客 启动</a>
+    </h1>
   
-</div>
 
-    </header>
-    <div>
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/03/10/new-blog/" class="article-date">
+  <time datetime="2018-03-10T01:58:26.000Z" itemprop="datePublished">2018-03-10</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
       
         <p>花了一上午时间，通过参照  <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>  的文档和各种 <a href="https://github.com/limedroid/HexoLearning" target="_blank" rel="noopener">网上资料</a> ，终于将博客搭建起来， 由于没仔细参照文档，耽误了好多时间。期间接触到了 Markdown 这种写作语法，写起来还是挺轻便的。以后的新博客都写在这里，旧的博客不再更新。</p>
 
       
+
+      
+        
     </div>
+  </div>
+  
 </article>
 
-    </li>
+
+
   
-</ul>
+  
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/hejianxian" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
+</aside>
 
-
-            <footer>
-    <div>© 2016 - John Doe </div>
-    <div>
-    Powered by Hexo
-    </div>
+      </div>
+      <footer id="footer">
+  
+	<div id="footer-info" class="inner">
+	  &copy; 2018 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
 </footer>
 
-        </div>
     </div>
-</div>
-<script src="/js/pager/dist/singlepager.js"></script>
-<script>
-var sp = new Pager('data-pager-shell')
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/hejianxian" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
 
-</script>
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
 </body>
 </html>

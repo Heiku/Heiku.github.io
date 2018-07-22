@@ -1,191 +1,139 @@
 <!DOCTYPE html>
-<html lang="zh-cmn-Hans">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Heiku</title>
+  <meta charset="utf-8">
+  
+  <title>Tag: Java | Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="选择热爱">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Heiku">
+<meta property="og:url" content="http://home.sise.com/tags/Java/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="选择热爱">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Heiku">
+<meta name="twitter:description" content="选择热爱">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
   
   
-  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="/css/style.css">
-</head>
+  
 
+</head>
 <body>
-<div class="Shell">
-    <aside class='SideBar'>
-    <section class='avatar' style="background-image: url(/assets/background.jpg)">
-        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main">
+  
+  
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
         </div>
-    </section>
-    <section class='menu'>
-        <div>Heiku</div>
-        
-        <ul>
-          
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
-          
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
-          
-            <a href="/tags" class="Btn">
-              <li>Tags</li>
-            </a>  
-          
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
-          
-        </ul>
-    </section>
-    <section class="media">
-        
-            
-                <a href="https://github.com/Heiku">
-                    <img src="/assets/github.svg" />
-                </a>
-            
-        
-    </section>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2018/04/21/HashMap-源码分析/" class="archive-article-date">
+  <time datetime="2018-04-21T12:51:58.000Z" itemprop="datePublished">Apr 21</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/04/21/HashMap-源码分析/">HashMap 源码分析</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2018/04/15/ArrayList-源码分析/" class="archive-article-date">
+  <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">Apr 15</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/04/15/ArrayList-源码分析/">ArrayList 源码分析</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
+  
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/hejianxian" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
 </aside>
 
-    <div class="container">
-        <div data-pager-shell>
-            <ul class="Index">
+      </div>
+      <footer id="footer">
   
-    <header class='PageTitle'>
-        <h1>{ Java }</h1>
-    </header>
-  
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2018/04/21/HashMap-源码分析/">HashMap 源码分析</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-04-21T12:51:58.000Z" itemprop="datePublished">
-    2018-04-21
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/HashMap/">HashMap</a> }
-  </li>
-
-
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p><strong>特征</strong></p>
-<ul>
-<li>根据键的 <strong>hascode</strong> 值存储数据，可直接定位值，具有很快的数据访问数组</li>
-<li>遍历的顺序不确定</li>
-<li>最多允许一条 null 键，允许多条记录的键为 null</li>
-<li>非线程安全<br>  可使用 Collections.synchronizedMap 使 HashMap 具有线程安全的能力 或 ConcurrentHashMap</li>
-</ul>
-<p><strong>底层结构</strong></p>
-<p>底层结构采用了数组，而数组的每一个元素都是多个 Node 构成的链表，当数组超过 threshold 时，数组将会扩容。</p>
-<p>数组中的每一个都相当于一个单向链表，key 通过 hash() 后，相同的键值对会加入到链表中，当桶中的数过多时（链表长度 &gt; 8），将会转化为 红黑树，相比与Jdk 1.7， Jdk 1.8 中当链表过长时，链表转化为红黑树，在维护红黑树时，最坏情况下查找的时间复杂度为 O(log n)，比起单链表的 O(1) ~ O(n), 时间复杂度降低了，但所需要维护的空间占用却更多。</p>
-        
-          <div class="more-link">
-            <a href="/2018/04/21/HashMap-源码分析/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2018/04/15/ArrayList-源码分析/">ArrayList 源码分析</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">
-    2018-04-15
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/ArrayList/">ArrayList</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
-  </li>
-
-
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p>ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：<strong>它是不安全的</strong>。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。</p>
-<h3 id="ArrayList-与-Array-区别："><a href="#ArrayList-与-Array-区别：" class="headerlink" title="ArrayList 与 Array 区别："></a>ArrayList 与 Array 区别：</h3><ul>
-<li>Array 包含的是基本类型和对象类型，而ArrayList 只能包含对象类型</li>
-<li>Array 的大小的是固定的，所以在定义数组的时候尽量确定需要的数组大小，而ArrayList 的大小是动态变化的，当容量不足时能自动扩容</li>
-<li>ArrayList 可以看作Array的增强版，提供了更多的方法和特性，在查找等操作上更方便</li>
-</ul>
-<hr>
-<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt;</span><br><span class="line">        implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
-        
-          <div class="more-link">
-            <a href="/2018/04/15/ArrayList-源码分析/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-</ul>
-
-
-
-            <footer>
-    <div>© 2016 - John Doe </div>
-    <div>
-    Powered by Hexo
-    </div>
+	<div id="footer-info" class="inner">
+	  &copy; 2018 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
 </footer>
 
-        </div>
     </div>
-</div>
-<script src="/js/pager/dist/singlepager.js"></script>
-<script>
-var sp = new Pager('data-pager-shell')
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/hejianxian" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
 
-</script>
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
 </body>
 </html>
