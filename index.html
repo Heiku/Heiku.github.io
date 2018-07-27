@@ -31,6 +31,45 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-工厂方法模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/27/工厂方法模式/">工厂方法模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/27/工厂方法模式/" class="article-date">
+  <time datetime="2018-07-27T03:24:18.000Z" itemprop="datePublished">2018-07-27</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>定义一个创建对象的接口，但让实现这个接口的类来决定实例化哪个类。工厂方法让类的实例化推迟到子类中进行。</p>
+<p><strong>举例</strong></p>
+<p>使用了工厂方法模式，最大的优点就是当我们需要一个类对象时，只需要通过将我们需要的条件告诉具体的实现工厂，工厂就会返回给我们需要的对象，将对象封装在工厂中。同时，当具体产品类型增加时，我们只需定义该类，并告诉工厂我们想要该类对象，工厂就会自动帮我们创建。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/7/27</span><br><span class="line"> */</span><br><span class="line">// 手机组件</span><br><span class="line">abstract class PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 摄像头</span><br><span class="line">class CameraComponent extends PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    CameraComponent()&#123;</span><br><span class="line">        System.out.println(&quot;get cameraComponent&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 屏幕</span><br><span class="line">class ScreenComponent extends PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    ScreenComponent()&#123;</span><br><span class="line">        System.out.println(&quot;get screenComponent&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 处理器</span><br><span class="line">class ProcessorComponent extends PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    ProcessorComponent()&#123;</span><br><span class="line">        System.out.println(&quot;get prodcessorComponent&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 工厂接口</span><br><span class="line">interface Factory&#123;</span><br><span class="line"></span><br><span class="line">    &lt;T extends PhoneComponents&gt; T createComponent(Class&lt;T&gt; clazz);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 实际工厂</span><br><span class="line">class ComponentFactory implements Factory&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public &lt;T extends PhoneComponents&gt; T createComponent(Class&lt;T&gt; clazz) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return clazz.newInstance();</span><br><span class="line">        &#125;catch (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 手机零件店</span><br><span class="line">public class PhoneShop &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        Factory factory = new ComponentFactory();</span><br><span class="line"></span><br><span class="line">        // 我需要摄像头组件</span><br><span class="line">        factory.createComponent(CameraComponent.class);</span><br><span class="line"></span><br><span class="line">        // 我需要屏幕组件</span><br><span class="line">        factory.createComponent(ScreenComponent.class);</span><br><span class="line"></span><br><span class="line">        // 我需要处理器组件</span><br><span class="line">        factory.createComponent(ProcessorComponent.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-LinkedHashMap-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
   
   <div class="article-inner">
