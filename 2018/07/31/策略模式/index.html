@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>策略模式 | Heiku</title>
+  <title>Strategy pattern | Heiku</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="概念 在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。 举例 策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。 组成 Context：一般提供se">
 <meta name="keywords" content="设计模式,Spring的源码分析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="策略模式">
+<meta property="og:title" content="Strategy pattern">
 <meta property="og:url" content="https://heiku.github.io/2018/07/31/策略模式/index.html">
 <meta property="og:site_name" content="Heiku">
 <meta property="og:description" content="概念 在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。 举例 策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。 组成 Context：一般提供se">
-<meta property="og:updated_time" content="2018-07-30T17:15:15.349Z">
+<meta property="og:updated_time" content="2018-08-31T15:34:29.532Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="策略模式">
+<meta name="twitter:title" content="Strategy pattern">
 <meta name="twitter:description" content="概念 在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。 举例 策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。 组成 Context：一般提供se">
   
     <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
@@ -39,7 +39,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      策略模式
+      Strategy pattern
     </h1>
   
 
@@ -69,28 +69,10 @@
 <p>在FrameworkServlet中会调用 initWebApplicationContext（）-&gt; onRefresh()</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">protected WebApplicationContext initWebApplicationContext() &#123;</span><br><span class="line">    ...</span><br><span class="line">    if (!this.refreshEventReceived) &#123;</span><br><span class="line">            this.onRefresh(wac);</span><br><span class="line">        &#125;</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
 <p>接着，在DispatcherServlet时，会进行bean的初始化，调用onRefresh() -&gt; initStrategies()，进行九大组件的初始化</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 刷新容器时，将策略更新</span><br><span class="line">protected void onRefresh(ApplicationContext context) &#123;</span><br><span class="line">        this.initStrategies(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 进行初始化策略</span><br><span class="line">    protected void initStrategies(ApplicationContext context) &#123;</span><br><span class="line">        this.initMultipartResolver(context);</span><br><span class="line">        this.initLocaleResolver(context);</span><br><span class="line">        this.initThemeResolver(context);</span><br><span class="line">        this.initHandlerMappings(context);</span><br><span class="line">        this.initHandlerAdapters(context);</span><br><span class="line">        this.initHandlerExceptionResolvers(context);</span><br><span class="line">        this.initRequestToViewNameTranslator(context);</span><br><span class="line">        this.initViewResolvers(context);</span><br><span class="line">        this.initFlashMapManager(context);</span><br><span class="line">    &#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">根据context上下文，获取对应策略</span><br></pre></td></tr></table></figure>
-<p>// 获取对应策略<br>protected <t> T getDefaultStrategy(ApplicationContext context, Class<t> strategyInterface) {<br>        List<t> strategies = this.getDefaultStrategies(context, strategyInterface);<br>        if (strategies.size() != 1) {<br>            throw new BeanInitializationException(“DispatcherServlet needs exactly 1 strategy for interface [“ + strategyInterface.getName() + “]”);<br>        } else {<br>            return strategies.get(0);<br>        }<br>    }</t></t></t></p>
-<p>protected <t> List<t> getDefaultStrategies(ApplicationContext context, Class<t> strategyInterface) {<br>        String key = strategyInterface.getName();<br>        String value = defaultStrategies.getProperty(key);<br>        if (value == null) {<br>            return new LinkedList();<br>        } else {<br>            String[] classNames = StringUtils.commaDelimitedListToStringArray(value);<br>            List<t> strategies = new ArrayList(classNames.length);<br>            String[] var7 = classNames;<br>            int var8 = classNames.length;</t></t></t></t></p>
-<pre><code>        for(int var9 = 0; var9 &lt; var8; ++var9) {
-            String className = var7[var9];
-
-            try {
-                Class&lt;?&gt; clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());
-                Object strategy = this.createDefaultStrategy(context, clazz);
-                strategies.add(strategy);
-            } catch (ClassNotFoundException var13) {
-                throw new BeanInitializationException(&quot;Could not find DispatcherServlet&apos;s default strategy class [&quot; + className + &quot;] for interface [&quot; + key + &quot;]&quot;, var13);
-            } catch (LinkageError var14) {
-                throw new BeanInitializationException(&quot;Error loading DispatcherServlet&apos;s default strategy class [&quot; + className + &quot;] for interface [&quot; + key + &quot;]: problem with class file or dependent class&quot;, var14);
-            }
-        }
-
-        return strategies;
-    }
-}
-</code></pre><p><code>`</code></p>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 刷新容器时，将策略更新</span><br><span class="line">protected void onRefresh(ApplicationContext context) &#123;</span><br><span class="line">        this.initStrategies(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 进行初始化策略</span><br><span class="line">    protected void initStrategies(ApplicationContext context) &#123;</span><br><span class="line">        this.initMultipartResolver(context);</span><br><span class="line">        this.initLocaleResolver(context);</span><br><span class="line">        this.initThemeResolver(context);</span><br><span class="line">        this.initHandlerMappings(context);</span><br><span class="line">        this.initHandlerAdapters(context);</span><br><span class="line">        this.initHandlerExceptionResolvers(context);</span><br><span class="line">        this.initRequestToViewNameTranslator(context);</span><br><span class="line">        this.initViewResolvers(context);</span><br><span class="line">        this.initFlashMapManager(context);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>根据context上下文，获取对应策略</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 获取对应策略</span><br><span class="line">protected &lt;T&gt; T getDefaultStrategy(ApplicationContext context, Class&lt;T&gt; strategyInterface) &#123;</span><br><span class="line">        List&lt;T&gt; strategies = this.getDefaultStrategies(context, strategyInterface);</span><br><span class="line">        if (strategies.size() != 1) &#123;</span><br><span class="line">            throw new BeanInitializationException(&quot;DispatcherServlet needs exactly 1 strategy for interface [&quot; + strategyInterface.getName() + &quot;]&quot;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return strategies.get(0);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">protected &lt;T&gt; List&lt;T&gt; getDefaultStrategies(ApplicationContext context, Class&lt;T&gt; strategyInterface) &#123;</span><br><span class="line">        String key = strategyInterface.getName();</span><br><span class="line">        String value = defaultStrategies.getProperty(key);</span><br><span class="line">        if (value == null) &#123;</span><br><span class="line">            return new LinkedList();</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            String[] classNames = StringUtils.commaDelimitedListToStringArray(value);</span><br><span class="line">            List&lt;T&gt; strategies = new ArrayList(classNames.length);</span><br><span class="line">            String[] var7 = classNames;</span><br><span class="line">            int var8 = classNames.length;</span><br><span class="line"></span><br><span class="line">            for(int var9 = 0; var9 &lt; var8; ++var9) &#123;</span><br><span class="line">                String className = var7[var9];  </span><br><span class="line">                try &#123;</span><br><span class="line">                    Class&lt;?&gt; clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());</span><br><span class="line">                    Object strategy = this.createDefaultStrategy(context, clazz);</span><br><span class="line">                    strategies.add(strategy);</span><br><span class="line">                &#125; catch (ClassNotFoundException var13) &#123;</span><br><span class="line">                    throw new BeanInitializationException(&quot;Could not find DispatcherServlet&apos;s default strategy class [&quot; + className + &quot;] for interface [&quot; + key + &quot;]&quot;, var13);</span><br><span class="line">                &#125; catch (LinkageError var14) &#123;</span><br><span class="line">                    throw new BeanInitializationException(&quot;Error loading DispatcherServlet&apos;s default strategy class [&quot; + className + &quot;] for interface [&quot; + key + &quot;]: problem with class file or dependent class&quot;, var14);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            return strategies;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
       
 
       
@@ -100,6 +82,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2018/08/31/装饰者模式/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Decorator pattern
+        
+      </div>
+    </a>
   
   
     <a href="/2018/07/29/抽象工厂模式/" id="article-nav-older" class="article-nav-link-wrap">

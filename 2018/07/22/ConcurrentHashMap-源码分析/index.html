@@ -6,7 +6,7 @@
   <title>ConcurrentHashMap-源码分析 | Heiku</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="产生原因  在多线程环境下，HashMap在扩容时会产生死循环，而线程安全的HashTable，在涉及多线程的操作都采用Synchronized锁住整个数组表，即所有线程在争夺一个资源，效率很低。  1.7 vs 1.8  1.7的 ConcurrentHashMap 采用的是分段锁的设计，底层数据结构是Segment + HashEntry，Segment实现了ReentrantLock，自带锁">
-<meta name="keywords" content="ConcurrentHashMap,Java,源码分析">
+<meta name="keywords" content="Java,源码分析,ConcurrentHashMap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ConcurrentHashMap-源码分析">
 <meta property="og:url" content="https://heiku.github.io/2018/07/22/ConcurrentHashMap-源码分析/index.html">
