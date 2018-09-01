@@ -57,92 +57,15 @@
 <p>在面向对象的编程中，装饰器模式是一种设计模式，它允许动态地将行为添加到单个对象，而不会影响来自同一类的其他对象的行为。</p>
 <p><strong>举例</strong></p>
 <p>当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以试试使用装饰者模式去解决这个问题。</p>
-<p>就以我们最经常看到的IO操作中，构造一个InputStreamReader，File读取path封装成FileInputStream，接着被装饰成InputStreamReader<br><code>InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(path)));</code><br><strong>组成</strong></p>
+<p>就以我们最经常看到的IO操作中，构造一个InputStreamReader，File读取path封装成FileInputStream，接着被装饰成InputStreamReader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(path)));</span><br></pre></td></tr></table></figure>
+<p><strong>组成</strong></p>
 <p>Component接口：抽象组件，即最原始的方法，底层方法。</p>
 <p>ConcreteComponent类：实现了Component接口，具体的被装饰组件。</p>
 <p>Decorator类：抽象继承类，是所有装饰者的父类。内部有一个私有的Component类型的属性，在构造方法中初始化属性，对底层的方法做了封装。</p>
 <p>ConcreteDecorator类：具体的装饰者类，继承Decorator类。每一个ConcreteDecorator类都会有自己的私有方法（方法增强），接着通过在重写父类方法，在重写方法中添加自身方法，从而达到了新的功能的效果。</p>
 <p><strong>举例</strong></p>
-<p><code></code><br>/**</p>
-<ul>
-<li>Created by Heiku on 2018/8/31<br>*</li>
-<li>Decorator pattern<br>*/</li>
-</ul>
-<p>// 抽象手机功能<br>interface PhoneFunc{</p>
-<pre><code>void shoot();
-void play();
-</code></pre><p>}</p>
-<p>// 手机的具体实现<br>class SimplePhone implements PhoneFunc{</p>
-<pre><code>@Override
-public void shoot() {
-    System.out.println(&quot;我可以拍摄&quot;);
-}
-
-
-@Override
-public void play() {
-    System.out.println(&quot;我可以播放音乐&quot;);
-}
-</code></pre><p>}</p>
-<p>// 抽象装饰者<br>abstract class Decorator implements PhoneFunc{</p>
-<pre><code>// 被装饰的PhoneFunc
-private PhoneFunc phoneFunc;
-
-
-// 通过构造器注入装饰的phoneFunc
-public Decorator(PhoneFunc phoneFunc){
-    this.phoneFunc = phoneFunc;
-}
-
-@Override
-public void shoot() {
-    this.phoneFunc.shoot();
-}
-
-@Override
-public void play() {
-    this.phoneFunc.play();
-}
-</code></pre><p>}</p>
-<p>// 继承抽象装饰者<br>class ShootPhone extends Decorator{</p>
-<pre><code>public ShootPhone(PhoneFunc phoneFunc){
-    super(phoneFunc);
-}
-
-// 自己新加的功能
-private void exposure(){
-    System.out.println(&quot;拍摄曝光处理&quot;);
-}
-
-
-@Override
-public void shoot() {
-    super.shoot();
-    exposure();
-}
-</code></pre><p>}</p>
-<p>class BeautyPhone extends Decorator{</p>
-<pre><code>public BeautyPhone(PhoneFunc phoneFunc){
-    super(phoneFunc);
-}
-
-// 自己新加的功能
-private void Beauty(){
-    System.out.println(&quot;拍摄美颜处理&quot;);
-}
-
-@Override
-public void shoot() {
-    super.shoot();
-    Beauty();
-}
-</code></pre><p>}</p>
-<p>public class Phone {<br>    public static void main(String[] args) {</p>
-<pre><code>    BeautyPhone beautyPhone = new BeautyPhone(new ShootPhone(new SimplePhone()));
-    beautyPhone.shoot();
-}
-</code></pre><p>}</p>
-<p>Reuslt:<br>我可以拍摄<br>拍摄曝光处理<br>拍摄美颜处理<br><code></code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/8/31</span><br><span class="line"> *</span><br><span class="line"> * Decorator pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">// 抽象手机功能</span><br><span class="line">interface PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    void shoot();</span><br><span class="line">    void play();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 手机的具体实现</span><br><span class="line">class SimplePhone implements PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        System.out.println(&quot;我可以拍摄&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play() &#123;</span><br><span class="line">        System.out.println(&quot;我可以播放音乐&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 抽象装饰者</span><br><span class="line">abstract class Decorator implements PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    // 被装饰的PhoneFunc</span><br><span class="line">    private PhoneFunc phoneFunc;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    // 通过构造器注入装饰的phoneFunc</span><br><span class="line">    public Decorator(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        this.phoneFunc = phoneFunc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        this.phoneFunc.shoot();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play() &#123;</span><br><span class="line">        this.phoneFunc.play();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 继承抽象装饰者</span><br><span class="line">class ShootPhone extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">    public ShootPhone(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        super(phoneFunc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 自己新加的功能</span><br><span class="line">    private void exposure()&#123;</span><br><span class="line">        System.out.println(&quot;拍摄曝光处理&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        super.shoot();</span><br><span class="line">        exposure();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BeautyPhone extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">    public BeautyPhone(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        super(phoneFunc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 自己新加的功能</span><br><span class="line">    private void Beauty()&#123;</span><br><span class="line">        System.out.println(&quot;拍摄美颜处理&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        super.shoot();</span><br><span class="line">        Beauty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Phone &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        BeautyPhone beautyPhone = new BeautyPhone(new ShootPhone(new SimplePhone()));</span><br><span class="line">        beautyPhone.shoot();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Reuslt:</span><br><span class="line">我可以拍摄</span><br><span class="line">拍摄曝光处理</span><br><span class="line">拍摄美颜处理</span><br></pre></td></tr></table></figure>
 
       
 
