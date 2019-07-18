@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="选择热爱">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Heiku">
+<meta property="og:url" content="https://heiku.github.io/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="选择热爱">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Heiku">
+<meta name="twitter:description" content="选择热爱">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head></html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Java泛型-协变与逆变" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/17/Java泛型-协变与逆变/">Java泛型-协变与逆变</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2019/07/17/Java泛型-协变与逆变/" class="article-date">
+  <time datetime="2019-07-17T14:30:27.000Z" itemprop="datePublished">2019-07-17</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><strong>协变与逆变 (Covariance and contravariance )</strong> 用来描述具有父/子关系的类型通过类型转换之后的继承关系。  </p>
+<p>即：如果A、B表示类型，f()表示类型转换，$\subseteq$ 表示子类与父类之间的继承关系，那么有以下定义：<br><strong>协变(Covariance)</strong>：当 A $\subseteq$ B时，f(A)$\subseteq$f(B)成立；<br><strong>逆变(contravariance)</strong>：当A $\subseteq$ B时，f(B)$\subseteq$f(A)成立；<br><strong>不变(invariance)</strong>：当A $\subseteq$ B时，以上均不成立，那么f(A)与f(B)之间不存在继承关系；</p>
+<p>先定义几个类之间的继承关系</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class Fruit&#123;&#125;       // base</span><br><span class="line"></span><br><span class="line">class Apple extends Fruit&#123;&#125;</span><br><span class="line"></span><br><span class="line">class Lemon extends Fruit&#123;&#125;</span><br><span class="line">class Eureka extends Lemon&#123;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="数组是协变的"><a href="#数组是协变的" class="headerlink" title="数组是协变的"></a>数组是协变的</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Fruit[] fruit = new Lemon[20];</span><br><span class="line"></span><br><span class="line">fruit[0] = new Lemon();</span><br><span class="line">fruit[1] = new Eureka();</span><br><span class="line"></span><br><span class="line">try &#123;</span><br><span class="line">    fruit[2] = new Fruit();</span><br><span class="line">&#125;catch (Exception e)&#123;</span><br><span class="line">    System.out.println(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">运行结果：</span><br><span class="line">java.lang.ArrayStoreException: Baisc.type.generic.Fruit</span><br></pre></td></tr></table></figure>
+<p>首先，创建的数组为Lemon数组，同时在栈中创建一个fruit的引用指向lemon[]。因为实际数组为 Lemon Class，所以我们可以放入 Lemon及子类 Eureka，而当我们将Fruit基类放入时，排除类型异常，因为并不是所有Fruit都属于Lemon。</p>
+<p>那么，为什么编译器不会发现问题呢？因为编译器会将在存储表中标识fruit是Fruit[]类型，所以编译期间通过，但在运行中才会去判断数组元素的类型约束。</p>
+<h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><p>为了解决这中问题，Java从引入泛型去解决编译期间的类型转换问题。但事实上，Java中的泛型不像 C++中的 <strong>模板泛型</strong> 一样，是真实的模板实例，十分灵活易于拓展。相反，而是一种语法糖，在编译期间会进行 <strong>类型擦除</strong>，最终都会替换成 <strong>非泛型上界</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Lemon&gt; list = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">在编译期间都会进行类型擦除，最终都会转为 class java.util.ArrayList 这样无类型的集合类</span><br></pre></td></tr></table></figure>
+<h2 id="So，泛型是不变的"><a href="#So，泛型是不变的" class="headerlink" title="So，泛型是不变的"></a>So，泛型是不变的</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">List&lt;Fruit&gt; list = new ArrayList&lt;Apple&gt;();     // 编译错误</span><br><span class="line"></span><br><span class="line">正因为泛型在编译期间进行了类型擦除，所以在编译期间会统一类型，所以会在编译期间提示错误。</span><br></pre></td></tr></table></figure>
+<p>那么，如果我想表示这种类型转换的话，那该怎么办？这时就需要通配符。</p>
+<h2 id="泛型中的通配符和边界"><a href="#泛型中的通配符和边界" class="headerlink" title="泛型中的通配符和边界"></a>泛型中的通配符和边界</h2><ul>
+<li><strong>&lt; ? extend T &gt;</strong>: 上界通配符 ( Upper Bounds Wildcards )</li>
+<li><strong>&lt; ? super T &gt;</strong>: 下界通配符 ( Lower Bounds Wildcards )</li>
+</ul>
+<h3 id="上界"><a href="#上界" class="headerlink" title="上界"></a>上界</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">List&lt;? extends Fruit&gt; = new ArrayList&lt;Lemon&gt;();      // 编译成功</span><br></pre></td></tr></table></figure>
+<p><strong>为什么说是上界通配符呢？</strong>  </p>
+<p>我们把之前列出的几个类通过一颗继承关系树表示，将会得到下面的结果：</p>
+<p><img src="/.io//泛型-上界.png" alt></p>
+<p><strong>&lt;? extend Fruit&gt;</strong> 指明了泛型的上界为Fruit，在上面的例子中，&lt; ? extends Fruit &gt; 表示了一个能装水果或者属于水果的盘子。即放得下 List&lt; Fruit &gt; 以及 List&lt; Lemon &gt;的基类。</p>
+<h3 id="下界"><a href="#下界" class="headerlink" title="下界"></a>下界</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">List&lt;? super Fruit&gt; list = new ArrayList&lt;&gt;();</span><br></pre></td></tr></table></figure>
+<p><img src="/.io//泛型-下界.png" alt></p>
+<p>下界表示的是一个相反的概念，表示的是当前的 list能存放的是 Fruit的基类。</p>
+<h3 id="PECS-原则"><a href="#PECS-原则" class="headerlink" title="PECS 原则"></a>PECS 原则</h3><p><strong>producer extends,consumer super  –《Effective Java》</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">List&lt;? extends Fruit&gt; list = new ArrayList&lt;Lemon&gt;();</span><br><span class="line"></span><br><span class="line">Object object = list.get(0);</span><br><span class="line">Fruit fruit = list.get(1);</span><br><span class="line">Lemon lemon = list.get(2);      // 1 编译错误</span><br><span class="line"></span><br><span class="line">list.add(new Lemon());          // 2 编译错误</span><br><span class="line">list.add(new Fruit());          // 3 编译错误</span><br></pre></td></tr></table></figure>
+<p><strong>&lt; ? extends Fruit &gt; 只能存，不能放</strong></p>
+<ul>
+<li>get( ) : extends 规定了容器的上界，所以容器中获取的类型只能是 Fruit 或是 它的基类即 Object。</li>
+<li>set( ) : 由于编译器不知道 List&lt;? extends Fruit&gt; 到底指的是什么类型，有可能是 Apple， 也有可能是 Lemon，所以会先在 List上打上标识符：<strong>CAP#1</strong>，表示捕获一个 Fruit 或 Fruit的子类，但却没有具体的类型可以与这个 <strong>CAP#1</strong> 进行匹配，所以在执行这种向上转型的时候，将散失其中传递对象的能力。  </li>
+</ul>
+<p>类比于数组，当我们将 Lemon[] 向上转型为 Fruit[]的时候，在运行期间往数组中添加 fruit会抛出异常，而泛型的时候，就是将这种类型检查移到编译期间，拒绝一切不安全的类型协变。</p>
+<p><strong>&lt; ? super Fruit &gt; 只能放，不能读</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">List&lt;? super Fruit&gt; list = new ArrayList&lt;&gt;();</span><br><span class="line">list.add(new Eureka());</span><br><span class="line">list.add(new Lemon());</span><br><span class="line">list.add(new Fruit());</span><br><span class="line"></span><br><span class="line">Lemon lemon = list.get(0);      // 编译失败</span><br><span class="line">Fruit fruit = list.get(0);      // 编译失败</span><br><span class="line">    </span><br><span class="line">Object obj = list.get(0);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>get ( ) : 下界规定了 List 存放的 元素的最小粒度的下限，即元素既然是 Fruit的基类，那么往里面放力度比 Fruit的都可以。</li>
+<li>set ( ) : 由于类型丢失，导致存放的时候只有 基类 Object才能放下。</li>
+</ul>
+
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-装饰者模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/31/装饰者模式/">Decorator pattern</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/08/31/装饰者模式/" class="article-date">
+  <time datetime="2018-08-31T15:31:48.000Z" itemprop="datePublished">2018-08-31</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>在面向对象的编程中，装饰器模式是一种设计模式，它允许动态地将行为添加到单个对象，而不会影响来自同一类的其他对象的行为。</p>
+<p><strong>举例</strong></p>
+<p>当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以试试使用装饰者模式去解决这个问题。</p>
+<p>就以我们最经常看到的IO操作中，构造一个InputStreamReader，File读取path封装成FileInputStream，接着被装饰成InputStreamReader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(path)));</span><br></pre></td></tr></table></figure>
+<p><strong>组成</strong></p>
+<p>Component接口：抽象组件，即最原始的方法，底层方法。</p>
+<p>ConcreteComponent类：实现了Component接口，具体的被装饰组件。</p>
+<p>Decorator类：抽象继承类，是所有装饰者的父类。内部有一个私有的Component类型的属性，在构造方法中初始化属性，对底层的方法做了封装。</p>
+<p>ConcreteDecorator类：具体的装饰者类，继承Decorator类。每一个ConcreteDecorator类都会有自己的私有方法（方法增强），接着通过在重写父类方法，在重写方法中添加自身方法，从而达到了新的功能的效果。</p>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/8/31</span><br><span class="line"> *</span><br><span class="line"> * Decorator pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">// 抽象手机功能</span><br><span class="line">interface PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    void shoot();</span><br><span class="line">    void play();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 手机的具体实现</span><br><span class="line">class SimplePhone implements PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        System.out.println(&quot;我可以拍摄&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play() &#123;</span><br><span class="line">        System.out.println(&quot;我可以播放音乐&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 抽象装饰者</span><br><span class="line">abstract class Decorator implements PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    // 被装饰的PhoneFunc</span><br><span class="line">    private PhoneFunc phoneFunc;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    // 通过构造器注入装饰的phoneFunc</span><br><span class="line">    public Decorator(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        this.phoneFunc = phoneFunc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        this.phoneFunc.shoot();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play() &#123;</span><br><span class="line">        this.phoneFunc.play();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 继承抽象装饰者</span><br><span class="line">class ShootPhone extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">    public ShootPhone(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        super(phoneFunc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 自己新加的功能</span><br><span class="line">    private void exposure()&#123;</span><br><span class="line">        System.out.println(&quot;拍摄曝光处理&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        super.shoot();</span><br><span class="line">        exposure();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BeautyPhone extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">    public BeautyPhone(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        super(phoneFunc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 自己新加的功能</span><br><span class="line">    private void Beauty()&#123;</span><br><span class="line">        System.out.println(&quot;拍摄美颜处理&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        super.shoot();</span><br><span class="line">        Beauty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Phone &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        BeautyPhone beautyPhone = new BeautyPhone(new ShootPhone(new SimplePhone()));</span><br><span class="line">        beautyPhone.shoot();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Reuslt:</span><br><span class="line">我可以拍摄</span><br><span class="line">拍摄曝光处理</span><br><span class="line">拍摄美颜处理</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-策略模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/31/策略模式/">Strategy pattern</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/31/策略模式/" class="article-date">
+  <time datetime="2018-07-30T16:13:01.000Z" itemprop="datePublished">2018-07-31</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。</p>
+<p><strong>举例</strong></p>
+<p>策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。</p>
+<p><strong>组成</strong></p>
+<p>Context：一般提供setStrategy(strategy)，用于设置对应的策略，同时起到封装的作用，屏蔽直接访问实际策略。</p>
+<p>Srategy：strategy公共接口，规定了策略的属性，方法</p>
+<p>ConcreteStrategy：实际策略类，实现了接口，根据具体策略实现对应的算法。</p>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/7/31</span><br><span class="line"> *</span><br><span class="line"> * Strategy pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">// 策略接口 购买手机的客户</span><br><span class="line">interface Client&#123;</span><br><span class="line">    void introduct();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 果粉</span><br><span class="line">class AppleFans implements Client&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void introduct() &#123;</span><br><span class="line">        System.out.println(&quot;向果粉介绍苹果新产品&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 游戏玩家</span><br><span class="line">class Gamer implements Client&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void introduct() &#123;</span><br><span class="line">        System.out.println(&quot;向手机玩家介绍 黑鲨等游戏手机&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 学生党</span><br><span class="line">class Student implements Client&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void introduct() &#123;</span><br><span class="line">        System.out.println(&quot;向学生党介绍最新发布的手机&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 手机城</span><br><span class="line">public class PhoneShop &#123;</span><br><span class="line">    private Client client = null;</span><br><span class="line"></span><br><span class="line">    public void setClient(Client client) &#123;</span><br><span class="line">        this.client = client;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void introduct()&#123;</span><br><span class="line">        client.introduct();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        PhoneShop shop = new PhoneShop();</span><br><span class="line"></span><br><span class="line">        // 果粉进店</span><br><span class="line">        System.out.println(&quot;果粉进店&quot;);</span><br><span class="line">        shop.setClient(new AppleFans());</span><br><span class="line">        shop.introduct();</span><br><span class="line"></span><br><span class="line">        // 游戏发烧友进店</span><br><span class="line">        System.out.println(&quot;游戏发烧友进店&quot;);</span><br><span class="line">        shop.setClient(new Gamer());</span><br><span class="line">        shop.introduct();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        // 学生党进店</span><br><span class="line">        System.out.println(&quot;学生党进店&quot;);</span><br><span class="line">        shop.setClient(new Student());</span><br><span class="line">        shop.introduct();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 结果</span><br><span class="line">果粉进店</span><br><span class="line">向果粉介绍苹果新产品</span><br><span class="line">游戏发烧友进店</span><br><span class="line">向手机玩家介绍 黑鲨等游戏手机</span><br><span class="line">学生党进店</span><br><span class="line">向学生党介绍最新发布的手机</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2018/07/31/策略模式/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-抽象工厂模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/29/抽象工厂模式/">Abstract factory pattern</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/29/抽象工厂模式/" class="article-date">
+  <time datetime="2018-07-28T16:49:45.000Z" itemprop="datePublished">2018-07-29</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>抽象工厂模式 提供了一种方式封装一组独立的工厂有一个共同的主题，而无需指定他们的具体类，即提供接口，用于创建相关或依赖对象的类。</p>
+<p><strong>举例</strong></p>
+<p>之前提到了 工厂方法模式，区分这两种模式的点在于 工厂方法 -&gt; 单一产品，而 抽象工厂 -&gt; 产品族，对于下面的例子，组件工厂类可以抽分为两种工厂，分别为生成高质量组件的工厂(HighQualityFactory) 和 生成廉价组件的工厂(LowQualityFactory)，工厂生成的是产品族，一个工厂可以生成多种类别的组件，根据组件的高质量 或 廉价 两种属性确定对应的工厂。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/7/28</span><br><span class="line"> *</span><br><span class="line"> * model : Abstract factory pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 组件接口</span><br><span class="line">interface PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    // 组件质量</span><br><span class="line">    PhoneComponents quailty();</span><br><span class="line">    // 组件获取</span><br><span class="line">    PhoneComponents get();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 摄像头</span><br><span class="line">abstract class CameraComponent implements PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents get() &#123;</span><br><span class="line">        System.out.println(&quot;get CameraComponent&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 屏幕</span><br><span class="line">abstract class ScreenComponent implements PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents get() &#123;</span><br><span class="line">        System.out.println(&quot;get ScreenComponent&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 处理器</span><br><span class="line">abstract class ProcessorComponent implements PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents get() &#123;</span><br><span class="line">        System.out.println(&quot;get ProcessorComponent&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 高质量 摄像头</span><br><span class="line">class HighQuailtyCamera extends CameraComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is high quality camera&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 低质量 摄像头</span><br><span class="line">class  LowQualityCamera extends CameraComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is low quality camera&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 高质量 屏幕</span><br><span class="line">class HighQualityScreen extends ScreenComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is high quality screen&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 低质量 摄像头</span><br><span class="line">class LowQualityScreen extends ScreenComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is low quality screen&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 高质量 处理器</span><br><span class="line">class HighQualityProcessor extends ProcessorComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is high quality processor&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 低质量 处理器</span><br><span class="line">class LowQualityProcessor extends  ProcessorComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is low quality processor&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2018/07/29/抽象工厂模式/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-工厂方法模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/27/工厂方法模式/">Factory method pattern</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/27/工厂方法模式/" class="article-date">
+  <time datetime="2018-07-27T03:24:18.000Z" itemprop="datePublished">2018-07-27</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>定义一个创建对象的接口，但让实现这个接口的类来决定实例化哪个类。工厂方法让类的实例化推迟到子类中进行。</p>
+<p><strong>举例</strong></p>
+<p>使用了工厂方法模式，最大的优点就是当我们需要一个类对象时，只需要通过将我们需要的条件告诉具体的实现工厂，工厂就会返回给我们需要的对象，将对象封装在工厂中。同时，当具体产品类型增加时，我们只需定义该类，并告诉工厂我们想要该类对象，工厂就会自动帮我们创建。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/7/27</span><br><span class="line"> */</span><br><span class="line">// 手机组件</span><br><span class="line">abstract class PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 摄像头</span><br><span class="line">class CameraComponent extends PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    CameraComponent()&#123;</span><br><span class="line">        System.out.println(&quot;get cameraComponent&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 屏幕</span><br><span class="line">class ScreenComponent extends PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    ScreenComponent()&#123;</span><br><span class="line">        System.out.println(&quot;get screenComponent&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 处理器</span><br><span class="line">class ProcessorComponent extends PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    ProcessorComponent()&#123;</span><br><span class="line">        System.out.println(&quot;get prodcessorComponent&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 工厂接口</span><br><span class="line">interface Factory&#123;</span><br><span class="line"></span><br><span class="line">    &lt;T extends PhoneComponents&gt; T createComponent(Class&lt;T&gt; clazz);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 实际工厂</span><br><span class="line">class ComponentFactory implements Factory&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public &lt;T extends PhoneComponents&gt; T createComponent(Class&lt;T&gt; clazz) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return clazz.newInstance();</span><br><span class="line">        &#125;catch (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 手机零件店</span><br><span class="line">public class PhoneShop &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        Factory factory = new ComponentFactory();</span><br><span class="line"></span><br><span class="line">        // 我需要摄像头组件</span><br><span class="line">        factory.createComponent(CameraComponent.class);</span><br><span class="line"></span><br><span class="line">        // 我需要屏幕组件</span><br><span class="line">        factory.createComponent(ScreenComponent.class);</span><br><span class="line"></span><br><span class="line">        // 我需要处理器组件</span><br><span class="line">        factory.createComponent(ProcessorComponent.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-LinkedHashMap-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/24/LinkedHashMap-源码分析/">LinkedHashMap-源码分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/24/LinkedHashMap-源码分析/" class="article-date">
+  <time datetime="2018-07-24T03:08:09.000Z" itemprop="datePublished">2018-07-24</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>数据结构</strong></p>
+<p>LinkedHashMap 继承了HashMap,对HashMap进行了增强，通过内部维护了双向链表，使LinkedHashMap拥有了顺序访问的功能，提供了有序性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>内部构造</strong></p>
+<p>Entry内部维护了 before 和 after 两个entry，用于构建双向链表entry之间的指向关系，同时accessOrder 用于设置LinkedHashMap的读取是按照访问顺序还是插入顺序，通过这个accessOrder属性可以很容易实现 LRU<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">    Entry&lt;K,V&gt; before, after;</span><br><span class="line">    Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        super(hash, key, value, next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 头节点（最旧未使用）</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line"></span><br><span class="line">// 尾节点 （最近使用）</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line"></span><br><span class="line">// 设置LinkedHashMap的读取顺序</span><br><span class="line">//      false(default)：插入顺序</span><br><span class="line">//      true：访问顺序</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure></p>
+        
+          <p class="article-more-link">
+            <a href="/2018/07/24/LinkedHashMap-源码分析/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-ConcurrentHashMap-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/22/ConcurrentHashMap-源码分析/">ConcurrentHashMap-源码分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/22/ConcurrentHashMap-源码分析/" class="article-date">
+  <time datetime="2018-07-22T15:29:04.000Z" itemprop="datePublished">2018-07-22</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>产生原因</strong></p>
+<ul>
+<li>在多线程环境下，HashMap在扩容时会产生死循环，而线程安全的HashTable，在涉及多线程的操作都采用Synchronized锁住整个数组表，即所有线程在争夺一个资源，效率很低。</li>
+</ul>
+<p><strong>1.7 vs 1.8</strong></p>
+<ul>
+<li>1.7的 ConcurrentHashMap 采用的是分段锁的设计，底层数据结构是Segment + HashEntry，Segment实现了ReentrantLock，自带锁的功能，每次只锁定对应的Segment，多个线程争夺同个segment时，通过tryLock争夺，锁定的粒度下降了，性能也就提高了不少。</li>
+</ul>
+<ul>
+<li>1.8的ConcurrentHashMap 摒弃了分段锁的概念（Segment），沿用了HashMap的思想，基于数组 + 链表 + 红黑树，底层采用的Node + CAS + Synchronized，保证并发的安全性，锁住的是粒度更小的Node。</li>
+</ul>
+<p><strong>分析</strong></p>
+<p>内部类Node, 实现了Map.Entry，用于存储&lt;K,V&gt;键值对，节点用 volatile修饰，保证了多线程间的可见性，同时注意 value也用volatile修饰，无法通过setValue设置value变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    final int hash;</span><br><span class="line">    final K key;</span><br><span class="line">    volatile V val;</span><br><span class="line">    volatile Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(int hash, K key, V val, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        this.hash = hash;</span><br><span class="line">        this.key = key;</span><br><span class="line">        this.val = val;</span><br><span class="line">        this.next = next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public final K getKey()       &#123; return key; &#125;</span><br><span class="line">    public final V getValue()     &#123; return val; &#125;</span><br><span class="line">    public final int hashCode()   &#123; return key.hashCode() ^ val.hashCode(); &#125;</span><br><span class="line">    public final String toString()&#123; return key + &quot;=&quot; + val; &#125;</span><br><span class="line">    public final V setValue(V value) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public final boolean equals(Object o) &#123;</span><br><span class="line">        Object k, v, u; Map.Entry&lt;?,?&gt; e;</span><br><span class="line">        return ((o instanceof Map.Entry) &amp;&amp;</span><br><span class="line">                (k = (e = (Map.Entry&lt;?,?&gt;)o).getKey()) != null &amp;&amp;</span><br><span class="line">                (v = e.getValue()) != null &amp;&amp;</span><br><span class="line">                (k == key || k.equals(key)) &amp;&amp;</span><br><span class="line">                (v == (u = val) || v.equals(u)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Virtualized support for map.get(); overridden in subclasses.</span><br><span class="line">     */</span><br><span class="line">    Node&lt;K,V&gt; find(int h, Object k) &#123;</span><br><span class="line">        Node&lt;K,V&gt; e = this;</span><br><span class="line">        if (k != null) &#123;</span><br><span class="line">            do &#123;</span><br><span class="line">                K ek;</span><br><span class="line">                if (e.hash == h &amp;&amp;</span><br><span class="line">                    ((ek = e.key) == k || (ek != null &amp;&amp; k.equals(ek))))</span><br><span class="line">                    return e;</span><br><span class="line">            &#125; while ((e = e.next) != null);</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2018/07/22/ConcurrentHashMap-源码分析/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-使用位运算替代-运算符" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/21/使用位运算替代-运算符/">使用位运算替代+-运算符</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/05/21/使用位运算替代-运算符/" class="article-date">
+  <time datetime="2018-05-21T07:56:13.000Z" itemprop="datePublished">2018-05-21</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="最近在刷-LeetCode-时，看到一道关于位运算的算法题"><a href="#最近在刷-LeetCode-时，看到一道关于位运算的算法题" class="headerlink" title="最近在刷 LeetCode 时，看到一道关于位运算的算法题"></a>最近在刷 LeetCode 时，看到一道关于位运算的算法题</h4><p><a href="https://leetcode-cn.com/problems/sum-of-two-integers" target="_blank" rel="noopener">不使用运算符 + 和-，计算两整数a 、b之和</a> 归根到底，就是运用计算机底层原理，通过位运算进行运算。</p>
+<p><strong>加法</strong><br>思路：用异运算构造两个数的和（不包含进位），用与运算再左移构造两者和的进位数，通过递归直到不进位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public int getSum(int a, int b) &#123;</span><br><span class="line">        if (b == 0)&#123;</span><br><span class="line">            return a;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        int sum = a ^ b;</span><br><span class="line">        int carry = (a &amp; b) &lt;&lt; 1;</span><br><span class="line"></span><br><span class="line">        return getSum(sum, carry);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+        
+          <p class="article-more-link">
+            <a href="/2018/05/21/使用位运算替代-运算符/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-HashMap-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/21/HashMap-源码分析/">HashMap 源码分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/04/21/HashMap-源码分析/" class="article-date">
+  <time datetime="2018-04-21T12:51:58.000Z" itemprop="datePublished">2018-04-21</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>特征</strong></p>
+<ul>
+<li>根据键的 <strong>hascode</strong> 值存储数据，可直接定位值，具有很快的数据访问数组</li>
+<li>遍历的顺序不确定</li>
+<li>最多允许一条 null 键，允许多条记录的键为 null</li>
+<li>非线程安全<br>  可使用 Collections.synchronizedMap 使 HashMap 具有线程安全的能力 或 ConcurrentHashMap</li>
+</ul>
+<p><strong>底层结构</strong></p>
+<p>底层结构采用了数组，而数组的每一个元素都是多个 Node 构成的链表，当数组超过 threshold 时，数组将会扩容。</p>
+<p>数组中的每一个都相当于一个单向链表，key 通过 hash() 后，相同的键值对会加入到链表中，当桶中的数过多时（链表长度 &gt; 8），将会转化为 红黑树，相比与Jdk 1.7， Jdk 1.8 中当链表过长时，链表转化为红黑树，在维护红黑树时，最坏情况下查找的时间复杂度为 O(log n)，比起单链表的 O(1) ~ O(n), 时间复杂度降低了，但所需要维护的空间占用却更多。</p>
+        
+          <p class="article-more-link">
+            <a href="/2018/04/21/HashMap-源码分析/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-ArrayList-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/15/ArrayList-源码分析/">ArrayList 源码分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/04/15/ArrayList-源码分析/" class="article-date">
+  <time datetime="2018-04-15T02:43:19.000Z" itemprop="datePublished">2018-04-15</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ArrayList 是平时常用的数据存储结构，它基于动态数组，支持随机访问，值得一提的是：<strong>它是不安全的</strong>。造成这种不安全的原因主要是：在在多线程环境下，向 ArrayList 添加或移除时，会产生数组越界等问题。推荐使用 Vector、CopyOnWriteArrayList 代替。</p>
+<h3 id="ArrayList-与-Array-区别："><a href="#ArrayList-与-Array-区别：" class="headerlink" title="ArrayList 与 Array 区别："></a>ArrayList 与 Array 区别：</h3><ul>
+<li>Array 包含的是基本类型和对象类型，而ArrayList 只能包含对象类型</li>
+<li>Array 的大小的是固定的，所以在定义数组的时候尽量确定需要的数组大小，而ArrayList 的大小是动态变化的，当容量不足时能自动扩容</li>
+<li>ArrayList 可以看作Array的增强版，提供了更多的方法和特性，在查找等操作上更方便</li>
+</ul>
+<hr>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt;</span><br><span class="line">        implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2018/04/15/ArrayList-源码分析/#more">More...</a>
+          </p>
+        
+      
+
+      
+        
+    </div>
+  </div>
+  
+</article>
+
+
+
+  
+  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
+  
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
+</aside>
+
+      </div>
+      <footer id="footer">
+  
+	<div id="footer-info" class="inner">
+	  &copy; 2019 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

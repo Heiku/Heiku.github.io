@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Strategy pattern | Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概念 在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。 举例 策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。 组成 Context：一般提供se">
+<meta name="keywords" content="设计模式,Spring的源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strategy pattern">
+<meta property="og:url" content="https://heiku.github.io/2018/07/31/策略模式/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="概念 在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。 举例 策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。 组成 Context：一般提供se">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-08-31T15:34:29.532Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Strategy pattern">
+<meta name="twitter:description" content="概念 在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。 举例 策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。 组成 Context：一般提供se">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head></html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main"><article id="post-策略模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Strategy pattern
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/31/策略模式/" class="article-date">
+  <time datetime="2018-07-30T16:13:01.000Z" itemprop="datePublished">2018-07-31</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>在计算机编程中，策略模式是一种行为 软件设计模式，可以在运行时选择算法。代码不是直接实现单个算法，而是接收关于在一系列算法中使用哪些算法的运行时指令。</p>
+<p><strong>举例</strong></p>
+<p>策略模式可以说是一种选择，它会根据调用者的属性去调用对应的算法，动态地改变对象的行为，用户可以调正对应的策略达到想要的目的。下面会举一个策略模式的Demo场景，同时将分析 Spring 中的策略模式。</p>
+<p><strong>组成</strong></p>
+<p>Context：一般提供setStrategy(strategy)，用于设置对应的策略，同时起到封装的作用，屏蔽直接访问实际策略。</p>
+<p>Srategy：strategy公共接口，规定了策略的属性，方法</p>
+<p>ConcreteStrategy：实际策略类，实现了接口，根据具体策略实现对应的算法。</p>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/7/31</span><br><span class="line"> *</span><br><span class="line"> * Strategy pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">// 策略接口 购买手机的客户</span><br><span class="line">interface Client&#123;</span><br><span class="line">    void introduct();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 果粉</span><br><span class="line">class AppleFans implements Client&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void introduct() &#123;</span><br><span class="line">        System.out.println(&quot;向果粉介绍苹果新产品&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 游戏玩家</span><br><span class="line">class Gamer implements Client&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void introduct() &#123;</span><br><span class="line">        System.out.println(&quot;向手机玩家介绍 黑鲨等游戏手机&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 学生党</span><br><span class="line">class Student implements Client&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void introduct() &#123;</span><br><span class="line">        System.out.println(&quot;向学生党介绍最新发布的手机&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 手机城</span><br><span class="line">public class PhoneShop &#123;</span><br><span class="line">    private Client client = null;</span><br><span class="line"></span><br><span class="line">    public void setClient(Client client) &#123;</span><br><span class="line">        this.client = client;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void introduct()&#123;</span><br><span class="line">        client.introduct();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        PhoneShop shop = new PhoneShop();</span><br><span class="line"></span><br><span class="line">        // 果粉进店</span><br><span class="line">        System.out.println(&quot;果粉进店&quot;);</span><br><span class="line">        shop.setClient(new AppleFans());</span><br><span class="line">        shop.introduct();</span><br><span class="line"></span><br><span class="line">        // 游戏发烧友进店</span><br><span class="line">        System.out.println(&quot;游戏发烧友进店&quot;);</span><br><span class="line">        shop.setClient(new Gamer());</span><br><span class="line">        shop.introduct();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        // 学生党进店</span><br><span class="line">        System.out.println(&quot;学生党进店&quot;);</span><br><span class="line">        shop.setClient(new Student());</span><br><span class="line">        shop.introduct();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 结果</span><br><span class="line">果粉进店</span><br><span class="line">向果粉介绍苹果新产品</span><br><span class="line">游戏发烧友进店</span><br><span class="line">向手机玩家介绍 黑鲨等游戏手机</span><br><span class="line">学生党进店</span><br><span class="line">向学生党介绍最新发布的手机</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><strong>Spring中的实际应用</strong></p>
+<p>在 SpringMVC中，当启动服务器时，request进来时，DispatcherSerlvet作为请求入口，会依次调用HttpServletBean -&gt; FrameworkServlet -&gt; DispatcherServlet,完成容器的初始化，注意几个servlet是向上的继承关系.</p>
+<p>在FrameworkServlet中会调用 initWebApplicationContext（）-&gt; onRefresh()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">protected WebApplicationContext initWebApplicationContext() &#123;</span><br><span class="line">    ...</span><br><span class="line">    if (!this.refreshEventReceived) &#123;</span><br><span class="line">            this.onRefresh(wac);</span><br><span class="line">        &#125;</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>接着，在DispatcherServlet时，会进行bean的初始化，调用onRefresh() -&gt; initStrategies()，进行九大组件的初始化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 刷新容器时，将策略更新</span><br><span class="line">protected void onRefresh(ApplicationContext context) &#123;</span><br><span class="line">        this.initStrategies(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 进行初始化策略</span><br><span class="line">    protected void initStrategies(ApplicationContext context) &#123;</span><br><span class="line">        this.initMultipartResolver(context);</span><br><span class="line">        this.initLocaleResolver(context);</span><br><span class="line">        this.initThemeResolver(context);</span><br><span class="line">        this.initHandlerMappings(context);</span><br><span class="line">        this.initHandlerAdapters(context);</span><br><span class="line">        this.initHandlerExceptionResolvers(context);</span><br><span class="line">        this.initRequestToViewNameTranslator(context);</span><br><span class="line">        this.initViewResolvers(context);</span><br><span class="line">        this.initFlashMapManager(context);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>根据context上下文，获取对应策略</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 获取对应策略</span><br><span class="line">protected &lt;T&gt; T getDefaultStrategy(ApplicationContext context, Class&lt;T&gt; strategyInterface) &#123;</span><br><span class="line">        List&lt;T&gt; strategies = this.getDefaultStrategies(context, strategyInterface);</span><br><span class="line">        if (strategies.size() != 1) &#123;</span><br><span class="line">            throw new BeanInitializationException(&quot;DispatcherServlet needs exactly 1 strategy for interface [&quot; + strategyInterface.getName() + &quot;]&quot;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return strategies.get(0);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">protected &lt;T&gt; List&lt;T&gt; getDefaultStrategies(ApplicationContext context, Class&lt;T&gt; strategyInterface) &#123;</span><br><span class="line">        String key = strategyInterface.getName();</span><br><span class="line">        String value = defaultStrategies.getProperty(key);</span><br><span class="line">        if (value == null) &#123;</span><br><span class="line">            return new LinkedList();</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            String[] classNames = StringUtils.commaDelimitedListToStringArray(value);</span><br><span class="line">            List&lt;T&gt; strategies = new ArrayList(classNames.length);</span><br><span class="line">            String[] var7 = classNames;</span><br><span class="line">            int var8 = classNames.length;</span><br><span class="line"></span><br><span class="line">            for(int var9 = 0; var9 &lt; var8; ++var9) &#123;</span><br><span class="line">                String className = var7[var9];  </span><br><span class="line">                try &#123;</span><br><span class="line">                    Class&lt;?&gt; clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());</span><br><span class="line">                    Object strategy = this.createDefaultStrategy(context, clazz);</span><br><span class="line">                    strategies.add(strategy);</span><br><span class="line">                &#125; catch (ClassNotFoundException var13) &#123;</span><br><span class="line">                    throw new BeanInitializationException(&quot;Could not find DispatcherServlet&apos;s default strategy class [&quot; + className + &quot;] for interface [&quot; + key + &quot;]&quot;, var13);</span><br><span class="line">                &#125; catch (LinkageError var14) &#123;</span><br><span class="line">                    throw new BeanInitializationException(&quot;Error loading DispatcherServlet&apos;s default strategy class [&quot; + className + &quot;] for interface [&quot; + key + &quot;]: problem with class file or dependent class&quot;, var14);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            return strategies;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+        
+    </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/31/装饰者模式/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Decorator pattern
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/29/抽象工厂模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Abstract factory pattern</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
+</aside>
+
+      </div>
+      <footer id="footer">
+  
+	<div id="footer-info" class="inner">
+	  &copy; 2019 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

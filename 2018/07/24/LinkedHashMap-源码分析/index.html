@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>LinkedHashMap-源码分析 | Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="数据结构 LinkedHashMap 继承了HashMap,对HashMap进行了增强，通过内部维护了双向链表，使LinkedHashMap拥有了顺序访问的功能，提供了有序性。 123public class LinkedHashMap&amp;lt;K,V&amp;gt;    extends HashMap&amp;lt;K,V&amp;gt;    implements Map&amp;lt;K,V&amp;gt; 内部构造 Entry内">
+<meta name="keywords" content="LinkedHashMap,Java,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LinkedHashMap-源码分析">
+<meta property="og:url" content="https://heiku.github.io/2018/07/24/LinkedHashMap-源码分析/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="数据结构 LinkedHashMap 继承了HashMap,对HashMap进行了增强，通过内部维护了双向链表，使LinkedHashMap拥有了顺序访问的功能，提供了有序性。 123public class LinkedHashMap&amp;lt;K,V&amp;gt;    extends HashMap&amp;lt;K,V&amp;gt;    implements Map&amp;lt;K,V&amp;gt; 内部构造 Entry内">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-07-24T04:03:09.380Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LinkedHashMap-源码分析">
+<meta name="twitter:description" content="数据结构 LinkedHashMap 继承了HashMap,对HashMap进行了增强，通过内部维护了双向链表，使LinkedHashMap拥有了顺序访问的功能，提供了有序性。 123public class LinkedHashMap&amp;lt;K,V&amp;gt;    extends HashMap&amp;lt;K,V&amp;gt;    implements Map&amp;lt;K,V&amp;gt; 内部构造 Entry内">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head></html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main"><article id="post-LinkedHashMap-源码分析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      LinkedHashMap-源码分析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/07/24/LinkedHashMap-源码分析/" class="article-date">
+  <time datetime="2018-07-24T03:08:09.000Z" itemprop="datePublished">2018-07-24</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>数据结构</strong></p>
+<p>LinkedHashMap 继承了HashMap,对HashMap进行了增强，通过内部维护了双向链表，使LinkedHashMap拥有了顺序访问的功能，提供了有序性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>内部构造</strong></p>
+<p>Entry内部维护了 before 和 after 两个entry，用于构建双向链表entry之间的指向关系，同时accessOrder 用于设置LinkedHashMap的读取是按照访问顺序还是插入顺序，通过这个accessOrder属性可以很容易实现 LRU<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">    Entry&lt;K,V&gt; before, after;</span><br><span class="line">    Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        super(hash, key, value, next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 头节点（最旧未使用）</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line"></span><br><span class="line">// 尾节点 （最近使用）</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line"></span><br><span class="line">// 设置LinkedHashMap的读取顺序</span><br><span class="line">//      false(default)：插入顺序</span><br><span class="line">//      true：访问顺序</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p><strong>get(Object key)</strong></p>
+<p>get()方法使用的是HashMap的get(),但如果 accessOrder 为 true时，要根据最近访问的原则，将访问到的元素添加到LinkedHashMap末尾</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> public V get(Object key) &#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    if ((e = getNode(hash(key), key)) == null)</span><br><span class="line">        return null;</span><br><span class="line">    if (accessOrder)</span><br><span class="line">        afterNodeAccess(e);</span><br><span class="line">    return e.value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体的移动节点到末尾的代码，同时要考虑到节点临界值的问题（-双向链接， -&gt; 单向链接）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">void afterNodeAccess(Node&lt;K,V&gt; e) &#123; // move node to last</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line"></span><br><span class="line">    // 如果 accessOrder为true，并且当前节点不是tail节点（尾节点不用移动位置），进行移动操作</span><br><span class="line">    if (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line"></span><br><span class="line">        // 获取当前节点的 b(before) a(after)</span><br><span class="line">        // b - p - a</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line"></span><br><span class="line">        // 当前节点的after释放</span><br><span class="line">        p.after = null;</span><br><span class="line"></span><br><span class="line">        // 如果b为空，即当前节点p为head</span><br><span class="line">        if (b == null)</span><br><span class="line">            head = a;</span><br><span class="line"></span><br><span class="line">        // b -&gt; a</span><br><span class="line">        else</span><br><span class="line">            b.after = a;</span><br><span class="line"></span><br><span class="line">        // a不为空，b &lt;- a</span><br><span class="line">        if (a != null)</span><br><span class="line">            a.before = b;</span><br><span class="line"></span><br><span class="line">        // a空，b为tail节点</span><br><span class="line">        else</span><br><span class="line">            last = b;</span><br><span class="line"></span><br><span class="line">        // 尾节点为空，p设置为头节点</span><br><span class="line">        if (last == null)</span><br><span class="line">            head = p;</span><br><span class="line"></span><br><span class="line">        // 将p放入链表末尾 last -&gt; p</span><br><span class="line">        else &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 刷新设置尾节点p</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>put(Object K, Object V)</strong></p>
+<p>LinkedHashMap内部并没有put()，它采用的是HashMap中的put()，同时根据访问规则，将新节点放入队列尾部</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">               boolean evict) &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">    if ((tab = table) == null || (n = tab.length) == 0)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    if ((p = tab[i = (n - 1) &amp; hash]) == null)</span><br><span class="line">        tab[i] = newNode(hash, key, value, null);</span><br><span class="line">    else &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        if (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        else if (p instanceof TreeNode)</span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</span><br><span class="line">        else &#123;</span><br><span class="line">            for (int binCount = 0; ; ++binCount) &#123;</span><br><span class="line">                if ((e = p.next) == null) &#123;</span><br><span class="line">                    p.next = newNode(hash, key, value, null);</span><br><span class="line">                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st</span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                if (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))</span><br><span class="line">                    break;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (e != null) &#123; // existing mapping for key</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            if (!onlyIfAbsent || oldValue == null)</span><br><span class="line">                e.value = value;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            // 直接回调LinkedHashMap中的具体方法 </span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line"></span><br><span class="line">            return oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    if (++size &gt; threshold)</span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+        
+    </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/27/工厂方法模式/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Factory method pattern
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/22/ConcurrentHashMap-源码分析/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ConcurrentHashMap-源码分析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
+</aside>
+
+      </div>
+      <footer id="footer">
+  
+	<div id="footer-info" class="inner">
+	  &copy; 2019 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Decorator pattern | Heiku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概念 在面向对象的编程中，装饰器模式是一种设计模式，它允许动态地将行为添加到单个对象，而不会影响来自同一类的其他对象的行为。 举例 当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以">
+<meta name="keywords" content="设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Decorator pattern">
+<meta property="og:url" content="https://heiku.github.io/2018/08/31/装饰者模式/index.html">
+<meta property="og:site_name" content="Heiku">
+<meta property="og:description" content="概念 在面向对象的编程中，装饰器模式是一种设计模式，它允许动态地将行为添加到单个对象，而不会影响来自同一类的其他对象的行为。 举例 当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-01T01:30:34.514Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Decorator pattern">
+<meta name="twitter:description" content="概念 在面向对象的编程中，装饰器模式是一种设计模式，它允许动态地将行为添加到单个对象，而不会影响来自同一类的其他对象的行为。 举例 当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以">
+  
+    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head></html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <div class="outer">
+        <section id="main"><article id="post-装饰者模式" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Decorator pattern
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2018/08/31/装饰者模式/" class="article-date">
+  <time datetime="2018-08-31T15:31:48.000Z" itemprop="datePublished">2018-08-31</time>
+</a>
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>在面向对象的编程中，装饰器模式是一种设计模式，它允许动态地将行为添加到单个对象，而不会影响来自同一类的其他对象的行为。</p>
+<p><strong>举例</strong></p>
+<p>当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以试试使用装饰者模式去解决这个问题。</p>
+<p>就以我们最经常看到的IO操作中，构造一个InputStreamReader，File读取path封装成FileInputStream，接着被装饰成InputStreamReader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(path)));</span><br></pre></td></tr></table></figure>
+<p><strong>组成</strong></p>
+<p>Component接口：抽象组件，即最原始的方法，底层方法。</p>
+<p>ConcreteComponent类：实现了Component接口，具体的被装饰组件。</p>
+<p>Decorator类：抽象继承类，是所有装饰者的父类。内部有一个私有的Component类型的属性，在构造方法中初始化属性，对底层的方法做了封装。</p>
+<p>ConcreteDecorator类：具体的装饰者类，继承Decorator类。每一个ConcreteDecorator类都会有自己的私有方法（方法增强），接着通过在重写父类方法，在重写方法中添加自身方法，从而达到了新的功能的效果。</p>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/8/31</span><br><span class="line"> *</span><br><span class="line"> * Decorator pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">// 抽象手机功能</span><br><span class="line">interface PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    void shoot();</span><br><span class="line">    void play();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 手机的具体实现</span><br><span class="line">class SimplePhone implements PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        System.out.println(&quot;我可以拍摄&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play() &#123;</span><br><span class="line">        System.out.println(&quot;我可以播放音乐&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 抽象装饰者</span><br><span class="line">abstract class Decorator implements PhoneFunc&#123;</span><br><span class="line"></span><br><span class="line">    // 被装饰的PhoneFunc</span><br><span class="line">    private PhoneFunc phoneFunc;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    // 通过构造器注入装饰的phoneFunc</span><br><span class="line">    public Decorator(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        this.phoneFunc = phoneFunc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        this.phoneFunc.shoot();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play() &#123;</span><br><span class="line">        this.phoneFunc.play();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 继承抽象装饰者</span><br><span class="line">class ShootPhone extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">    public ShootPhone(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        super(phoneFunc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 自己新加的功能</span><br><span class="line">    private void exposure()&#123;</span><br><span class="line">        System.out.println(&quot;拍摄曝光处理&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        super.shoot();</span><br><span class="line">        exposure();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BeautyPhone extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">    public BeautyPhone(PhoneFunc phoneFunc)&#123;</span><br><span class="line">        super(phoneFunc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 自己新加的功能</span><br><span class="line">    private void Beauty()&#123;</span><br><span class="line">        System.out.println(&quot;拍摄美颜处理&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shoot() &#123;</span><br><span class="line">        super.shoot();</span><br><span class="line">        Beauty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Phone &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        BeautyPhone beautyPhone = new BeautyPhone(new ShootPhone(new SimplePhone()));</span><br><span class="line">        beautyPhone.shoot();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Reuslt:</span><br><span class="line">我可以拍摄</span><br><span class="line">拍摄曝光处理</span><br><span class="line">拍摄美颜处理</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+        
+    </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/07/17/Java泛型-协变与逆变/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Java泛型-协变与逆变
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/31/策略模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Strategy pattern</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        <aside id="sidebar">
+  <nav class="menus">
+  	<ul>
+  		<li><a href="/"><i class="icon icon-home"></i></a></li>
+  		
+			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
+  		
+  		
+			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
+  		
+  		
+  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
+  		
+  	</ul>
+  </nav>
+  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
+</aside>
+
+      </div>
+      <footer id="footer">
+  
+	<div id="footer-info" class="inner">
+	  &copy; 2019 John Doe 
+	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
+	</div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tag</a>
+  
+    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
