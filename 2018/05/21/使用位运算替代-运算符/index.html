@@ -1,149 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans">
 <head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
-  
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>使用位运算替代+-运算符 | Heiku</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最近在刷 LeetCode 时，看到一道关于位运算的算法题不使用运算符 + 和-，计算两整数a 、b之和 归根到底，就是运用计算机底层原理，通过位运算进行运算。 加法思路：用异运算构造两个数的和（不包含进位），用与运算再左移构造两者和的进位数，通过递归直到不进位。12345678910public int getSum(int a, int b) &amp;#123;        if (b == 0)">
-<meta name="keywords" content="LeetCode,算法">
-<meta property="og:type" content="article">
-<meta property="og:title" content="使用位运算替代+-运算符">
-<meta property="og:url" content="https://heiku.github.io/2018/05/21/使用位运算替代-运算符/index.html">
-<meta property="og:site_name" content="Heiku">
-<meta property="og:description" content="最近在刷 LeetCode 时，看到一道关于位运算的算法题不使用运算符 + 和-，计算两整数a 、b之和 归根到底，就是运用计算机底层原理，通过位运算进行运算。 加法思路：用异运算构造两个数的和（不包含进位），用与运算再左移构造两者和的进位数，通过递归直到不进位。12345678910public int getSum(int a, int b) &amp;#123;        if (b == 0)">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-07-23T08:02:56.484Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用位运算替代+-运算符">
-<meta name="twitter:description" content="最近在刷 LeetCode 时，看到一道关于位运算的算法题不使用运算符 + 和-，计算两整数a 、b之和 归根到底，就是运用计算机底层原理，通过位运算进行运算。 加法思路：用异运算构造两个数的和（不包含进位），用与运算再左移构造两者和的进位数，通过递归直到不进位。12345678910public int getSum(int a, int b) &amp;#123;        if (b == 0)">
-  
-    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
-  
-  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
-</head></html>
 <body>
-  <div id="container">
-    <div id="wrap">
-      <div class="outer">
-        <section id="main"><article id="post-使用位运算替代-运算符" class="article article-type-post" itemscope itemprop="blogPost">
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url(/assets/background.jpg)">
+        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Heiku</div>
         
-  
-    <h1 class="article-title" itemprop="name">
-      使用位运算替代+-运算符
-    </h1>
-  
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+            <a href="https://github.com/Heiku" class="Btn">
+              <li>Github</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="https://github.com/Heiku">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
 
-      </header>
-    
-    <div class="article-meta">
-      <a href="/2018/05/21/使用位运算替代-运算符/" class="article-date">
-  <time datetime="2018-05-21T07:56:13.000Z" itemprop="datePublished">2018-05-21</time>
-</a>
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="最近在刷-LeetCode-时，看到一道关于位运算的算法题"><a href="#最近在刷-LeetCode-时，看到一道关于位运算的算法题" class="headerlink" title="最近在刷 LeetCode 时，看到一道关于位运算的算法题"></a>最近在刷 LeetCode 时，看到一道关于位运算的算法题</h4><p><a href="https://leetcode-cn.com/problems/sum-of-two-integers" target="_blank" rel="noopener">不使用运算符 + 和-，计算两整数a 、b之和</a> 归根到底，就是运用计算机底层原理，通过位运算进行运算。</p>
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>使用位运算替代+-运算符</h1>
+    </header>
+
+    <section>
+      <h4 id="最近在刷-LeetCode-时，看到一道关于位运算的算法题"><a href="#最近在刷-LeetCode-时，看到一道关于位运算的算法题" class="headerlink" title="最近在刷 LeetCode 时，看到一道关于位运算的算法题"></a>最近在刷 LeetCode 时，看到一道关于位运算的算法题</h4><p><a href="https://leetcode-cn.com/problems/sum-of-two-integers" target="_blank" rel="noopener">不使用运算符 + 和-，计算两整数a 、b之和</a> 归根到底，就是运用计算机底层原理，通过位运算进行运算。</p>
 <p><strong>加法</strong><br>思路：用异运算构造两个数的和（不包含进位），用与运算再左移构造两者和的进位数，通过递归直到不进位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public int getSum(int a, int b) &#123;</span><br><span class="line">        if (b == 0)&#123;</span><br><span class="line">            return a;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        int sum = a ^ b;</span><br><span class="line">        int carry = (a &amp; b) &lt;&lt; 1;</span><br><span class="line"></span><br><span class="line">        return getSum(sum, carry);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <a id="more"></a>
 <p><strong>减法</strong><br>思路：加上另一个数的补码（取反加一）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int substract(int num1, int num2)&#123;</span><br><span class="line">        int subtractor = getSum(~num2, 1);// 先求减数的补码（取反加一）</span><br><span class="line">        int result = getSum(num1, subtractor); // getSum()即上述加法运算　　</span><br><span class="line">        return result ;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p><strong>乘法</strong><br>思路：先判断两个数是否是正数，取绝对值进行多次加法<br>     或 采用手动乘积的过程，判断乘数的末位，若为1，则相加被乘数。同时，在每次运算的时候，被乘数左移，乘数右移<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">int multiply(int a, int b) &#123;</span><br><span class="line">        int multiplicand = a &lt; 0 ? getSum(~a, 1) : a;</span><br><span class="line">        int multiplier = b &lt; 0 ? getSum(~b , 1) : b;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        //计算绝对值的乘积　　</span><br><span class="line">        int product = 0;</span><br><span class="line">        while(multiplier &gt; 0) &#123;</span><br><span class="line">            if((multiplier &amp; 0x1) &gt; 0) &#123;// 每次考察乘数的最后一位　　　　</span><br><span class="line">                product = getSum(product, multiplicand);</span><br><span class="line">            &#125;</span><br><span class="line">            multiplicand = multiplicand &lt;&lt; 1;// 每运算一次，被乘数要左移一位　　　　</span><br><span class="line">            multiplier = multiplier &gt;&gt; 1;// 每运算一次，乘数要右移一位（可对照上图理解）　　</span><br><span class="line">        &#125;</span><br><span class="line">        //计算乘积的符号　　</span><br><span class="line">        if((a ^ b) &lt; 0) &#123;</span><br><span class="line">            product = getSum(~product, 1);</span><br><span class="line">        &#125;</span><br><span class="line">        return product;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p><strong>除法</strong><br>思路：除数不停减去被除数，直到被除数小于除数，期间减去的次数就是商，剩下的就是余数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">int divide(int a, int b)&#123;</span><br><span class="line">        // 先取被除数和除数的绝对值    </span><br><span class="line">        int dividend = a &gt; 0 ? a : getSum(~a, 1);</span><br><span class="line">        int divisor = b &gt; 0 ? a : getSum(~b, 1);</span><br><span class="line"></span><br><span class="line">        int quotient = 0;// 商    </span><br><span class="line">        int remainder = 0;// 余数    </span><br><span class="line">        // 不断用除数去减被除数，直到被除数小于被除数（即除不尽了）    </span><br><span class="line">        while(dividend &gt;= divisor)&#123;// 直到商小于被除数        </span><br><span class="line">            quotient = getSum(quotient, 1);</span><br><span class="line">            dividend = substract(dividend, divisor);</span><br><span class="line">        &#125;</span><br><span class="line">        // 确定商的符号    </span><br><span class="line">        if((a ^ b) &lt; 0)&#123;// 如果除数和被除数异号，则商为负数  </span><br><span class="line">            quotient = getSum(~quotient, 1);</span><br><span class="line">        &#125;</span><br><span class="line">        // 确定余数符号    </span><br><span class="line">        remainder = b &gt; 0 ? dividend : getSum(~dividend, 1);</span><br><span class="line">        return quotient;// 返回商</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 
-      
 
       
-        
-    </div>
-  </div>
-  
+
+    </section>
     
-<nav id="article-nav">
-  
-    <a href="/2018/07/22/ConcurrentHashMap-源码分析/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          ConcurrentHashMap-源码分析
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2018/04/21/HashMap-源码分析/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">HashMap 源码分析</div>
-    </a>
-  
-</nav>
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2018-05-21T07:56:13.000Z" itemprop="datePublished">
+              2018-05-21
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/LeetCode/">LeetCode</a> }
+  </li>
 
-  
+  <li class="meta-text">
+  { <a href="/tags/算法/">算法</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
 </article>
 
-
-</section>
-        <aside id="sidebar">
-  <nav class="menus">
-  	<ul>
-  		<li><a href="/"><i class="icon icon-home"></i></a></li>
-  		
-			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
-  		
-  		
-			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
-  		
-  		
-  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
-  		
-  	</ul>
-  </nav>
-  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
-</aside>
-
-      </div>
-      <footer id="footer">
   
-	<div id="footer-info" class="inner">
-	  &copy; 2019 John Doe 
-	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
-	</div>
+</div>
+
+            <footer>
+    <div>© 2016 - John Doe </div>
+    <div>
+    Powered by Hexo
+    </div>
 </footer>
 
+        </div>
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-    <a href="/tags" class="mobile-nav-link">Tag</a>
-  
-    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
-  
-</nav>
-    
+</div>
+<script src="/js/pager/dist/singlepager.js"></script>
+<script>
+var sp = new Pager('data-pager-shell')
 
-<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-  </div>
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>

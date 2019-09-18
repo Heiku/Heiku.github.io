@@ -1,149 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans">
 <head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
-  
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Abstract factory pattern | Heiku</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概念 抽象工厂模式 提供了一种方式封装一组独立的工厂有一个共同的主题，而无需指定他们的具体类，即提供接口，用于创建相关或依赖对象的类。 举例 之前提到了 工厂方法模式，区分这两种模式的点在于 工厂方法 -&amp;gt; 单一产品，而 抽象工厂 -&amp;gt; 产品族，对于下面的例子，组件工厂类可以抽分为两种工厂，分别为生成高质量组件的工厂(HighQualityFactory) 和 生成廉价组件的工厂(Lo">
-<meta name="keywords" content="设计模式">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Abstract factory pattern">
-<meta property="og:url" content="https://heiku.github.io/2018/07/29/抽象工厂模式/index.html">
-<meta property="og:site_name" content="Heiku">
-<meta property="og:description" content="概念 抽象工厂模式 提供了一种方式封装一组独立的工厂有一个共同的主题，而无需指定他们的具体类，即提供接口，用于创建相关或依赖对象的类。 举例 之前提到了 工厂方法模式，区分这两种模式的点在于 工厂方法 -&amp;gt; 单一产品，而 抽象工厂 -&amp;gt; 产品族，对于下面的例子，组件工厂类可以抽分为两种工厂，分别为生成高质量组件的工厂(HighQualityFactory) 和 生成廉价组件的工厂(Lo">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-07-28T17:14:34.131Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Abstract factory pattern">
-<meta name="twitter:description" content="概念 抽象工厂模式 提供了一种方式封装一组独立的工厂有一个共同的主题，而无需指定他们的具体类，即提供接口，用于创建相关或依赖对象的类。 举例 之前提到了 工厂方法模式，区分这两种模式的点在于 工厂方法 -&amp;gt; 单一产品，而 抽象工厂 -&amp;gt; 产品族，对于下面的例子，组件工厂类可以抽分为两种工厂，分别为生成高质量组件的工厂(HighQualityFactory) 和 生成廉价组件的工厂(Lo">
-  
-    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
-  
-  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
-</head></html>
 <body>
-  <div id="container">
-    <div id="wrap">
-      <div class="outer">
-        <section id="main"><article id="post-抽象工厂模式" class="article article-type-post" itemscope itemprop="blogPost">
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url(/assets/background.jpg)">
+        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Heiku</div>
         
-  
-    <h1 class="article-title" itemprop="name">
-      Abstract factory pattern
-    </h1>
-  
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+            <a href="https://github.com/Heiku" class="Btn">
+              <li>Github</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="https://github.com/Heiku">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
 
-      </header>
-    
-    <div class="article-meta">
-      <a href="/2018/07/29/抽象工厂模式/" class="article-date">
-  <time datetime="2018-07-28T16:49:45.000Z" itemprop="datePublished">2018-07-29</time>
-</a>
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>概念</strong></p>
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Abstract factory pattern</h1>
+    </header>
+
+    <section>
+      <p><strong>概念</strong></p>
 <p>抽象工厂模式 提供了一种方式封装一组独立的工厂有一个共同的主题，而无需指定他们的具体类，即提供接口，用于创建相关或依赖对象的类。</p>
 <p><strong>举例</strong></p>
 <p>之前提到了 工厂方法模式，区分这两种模式的点在于 工厂方法 -&gt; 单一产品，而 抽象工厂 -&gt; 产品族，对于下面的例子，组件工厂类可以抽分为两种工厂，分别为生成高质量组件的工厂(HighQualityFactory) 和 生成廉价组件的工厂(LowQualityFactory)，工厂生成的是产品族，一个工厂可以生成多种类别的组件，根据组件的高质量 或 廉价 两种属性确定对应的工厂。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by Heiku on 2018/7/28</span><br><span class="line"> *</span><br><span class="line"> * model : Abstract factory pattern</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 组件接口</span><br><span class="line">interface PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    // 组件质量</span><br><span class="line">    PhoneComponents quailty();</span><br><span class="line">    // 组件获取</span><br><span class="line">    PhoneComponents get();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 摄像头</span><br><span class="line">abstract class CameraComponent implements PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents get() &#123;</span><br><span class="line">        System.out.println(&quot;get CameraComponent&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 屏幕</span><br><span class="line">abstract class ScreenComponent implements PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents get() &#123;</span><br><span class="line">        System.out.println(&quot;get ScreenComponent&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 处理器</span><br><span class="line">abstract class ProcessorComponent implements PhoneComponents&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents get() &#123;</span><br><span class="line">        System.out.println(&quot;get ProcessorComponent&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 高质量 摄像头</span><br><span class="line">class HighQuailtyCamera extends CameraComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is high quality camera&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 低质量 摄像头</span><br><span class="line">class  LowQualityCamera extends CameraComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is low quality camera&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 高质量 屏幕</span><br><span class="line">class HighQualityScreen extends ScreenComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is high quality screen&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 低质量 摄像头</span><br><span class="line">class LowQualityScreen extends ScreenComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is low quality screen&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 高质量 处理器</span><br><span class="line">class HighQualityProcessor extends ProcessorComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is high quality processor&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 低质量 处理器</span><br><span class="line">class LowQualityProcessor extends  ProcessorComponent&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents quailty() &#123;</span><br><span class="line">        System.out.println(&quot;this is low quality processor&quot;);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">// 抽象工厂</span><br><span class="line">interface Factory&#123;</span><br><span class="line"></span><br><span class="line">    PhoneComponents productCamera();</span><br><span class="line">    PhoneComponents productScreen();</span><br><span class="line">    PhoneComponents productProcessor();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 实体 高级工厂（负责生产高质量产品）</span><br><span class="line">class HighQualityFactory implements Factory&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents productCamera() &#123;</span><br><span class="line">        return new HighQuailtyCamera();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents productScreen() &#123;</span><br><span class="line">        return new HighQualityScreen();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents productProcessor() &#123;</span><br><span class="line">        return new HighQualityProcessor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 实体 低级工厂（负责生成廉价产品）</span><br><span class="line">class LowQualityFactory implements Factory&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents productCamera() &#123;</span><br><span class="line">        return new LowQualityCamera();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents productScreen() &#123;</span><br><span class="line">        return new LowQualityScreen();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public PhoneComponents productProcessor() &#123;</span><br><span class="line">        return new LowQualityProcessor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class PhoneShop &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Factory highFactory = new HighQualityFactory();</span><br><span class="line">        Factory lowFactory = new LowQualityFactory();</span><br><span class="line"></span><br><span class="line">        // 不同工厂生成</span><br><span class="line">        highFactory.productCamera().quailty();</span><br><span class="line">        lowFactory.productScreen().quailty();</span><br><span class="line"></span><br><span class="line">        highFactory.productScreen().quailty();</span><br><span class="line">        lowFactory.productScreen().quailty();</span><br><span class="line"></span><br><span class="line">        highFactory.productProcessor().quailty();</span><br><span class="line">        lowFactory.productProcessor().quailty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
 
       
-        
-    </div>
-  </div>
-  
+
+    </section>
     
-<nav id="article-nav">
-  
-    <a href="/2018/07/31/策略模式/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Strategy pattern
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2018/07/27/工厂方法模式/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Factory method pattern</div>
-    </a>
-  
-</nav>
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2018-07-28T16:49:45.000Z" itemprop="datePublished">
+              2018-07-29
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/设计模式/">设计模式</a> }
+  </li>
 
-  
+
+            </div>
+          
+      </section>
+    
+    
 </article>
 
-
-</section>
-        <aside id="sidebar">
-  <nav class="menus">
-  	<ul>
-  		<li><a href="/"><i class="icon icon-home"></i></a></li>
-  		
-			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
-  		
-  		
-			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
-  		
-  		
-  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
-  		
-  	</ul>
-  </nav>
-  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
-</aside>
-
-      </div>
-      <footer id="footer">
   
-	<div id="footer-info" class="inner">
-	  &copy; 2019 John Doe 
-	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
-	</div>
+</div>
+
+            <footer>
+    <div>© 2016 - John Doe </div>
+    <div>
+    Powered by Hexo
+    </div>
 </footer>
 
+        </div>
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-    <a href="/tags" class="mobile-nav-link">Tag</a>
-  
-    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
-  
-</nav>
-    
+</div>
+<script src="/js/pager/dist/singlepager.js"></script>
+<script>
+var sp = new Pager('data-pager-shell')
 
-<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-  </div>
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>

@@ -1,68 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans">
 <head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
-  
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Java泛型-协变与逆变 | Heiku</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概念协变与逆变 (Covariance and contravariance ) 用来描述具有父/子关系的类型通过类型转换之后的继承关系。   即：如果A、B表示类型，f()表示类型转换，$\subseteq$ 表示子类与父类之间的继承关系，那么有以下定义：协变(Covariance)：当 A $\subseteq$ B时，f(A)$\subseteq$f(B)成立；逆变(contravarian">
-<meta name="keywords" content="Java,泛型,协变与逆变">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Java泛型-协变与逆变">
-<meta property="og:url" content="https://heiku.github.io/2019/07/17/Java泛型-协变与逆变/index.html">
-<meta property="og:site_name" content="Heiku">
-<meta property="og:description" content="概念协变与逆变 (Covariance and contravariance ) 用来描述具有父/子关系的类型通过类型转换之后的继承关系。   即：如果A、B表示类型，f()表示类型转换，$\subseteq$ 表示子类与父类之间的继承关系，那么有以下定义：协变(Covariance)：当 A $\subseteq$ B时，f(A)$\subseteq$f(B)成立；逆变(contravarian">
-<meta property="og:locale" content="default">
-<meta property="og:image" content="https://heiku.github.io/.io//泛型-上界.png">
-<meta property="og:image" content="https://heiku.github.io/.io//泛型-下界.png">
-<meta property="og:updated_time" content="2019-07-18T13:05:13.337Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java泛型-协变与逆变">
-<meta name="twitter:description" content="概念协变与逆变 (Covariance and contravariance ) 用来描述具有父/子关系的类型通过类型转换之后的继承关系。   即：如果A、B表示类型，f()表示类型转换，$\subseteq$ 表示子类与父类之间的继承关系，那么有以下定义：协变(Covariance)：当 A $\subseteq$ B时，f(A)$\subseteq$f(B)成立；逆变(contravarian">
-<meta name="twitter:image" content="https://heiku.github.io/.io//泛型-上界.png">
-  
-    <link rel="alternative" href="/atom.xml" title="Heiku" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
-  
-  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
-</head></html>
 <body>
-  <div id="container">
-    <div id="wrap">
-      <div class="outer">
-        <section id="main"><article id="post-Java泛型-协变与逆变" class="article article-type-post" itemscope itemprop="blogPost">
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url(/assets/background.jpg)">
+        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Heiku</div>
         
-  
-    <h1 class="article-title" itemprop="name">
-      Java泛型-协变与逆变
-    </h1>
-  
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+            <a href="https://github.com/Heiku" class="Btn">
+              <li>Github</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="https://github.com/Heiku">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
 
-      </header>
-    
-    <div class="article-meta">
-      <a href="/2019/07/17/Java泛型-协变与逆变/" class="article-date">
-  <time datetime="2019-07-17T14:30:27.000Z" itemprop="datePublished">2019-07-17</time>
-</a>
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><strong>协变与逆变 (Covariance and contravariance )</strong> 用来描述具有父/子关系的类型通过类型转换之后的继承关系。  </p>
-<p>即：如果A、B表示类型，f()表示类型转换，$\subseteq$ 表示子类与父类之间的继承关系，那么有以下定义：<br><strong>协变(Covariance)</strong>：当 A $\subseteq$ B时，f(A)$\subseteq$f(B)成立；<br><strong>逆变(contravariance)</strong>：当A $\subseteq$ B时，f(B)$\subseteq$f(A)成立；<br><strong>不变(invariance)</strong>：当A $\subseteq$ B时，以上均不成立，那么f(A)与f(B)之间不存在继承关系；</p>
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Java泛型-协变与逆变</h1>
+    </header>
+
+    <section>
+      <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><strong>协变与逆变 (Covariance and contravariance )</strong> 用来描述具有父/子关系的类型通过类型转换之后的继承关系。  </p>
+<p>即：如果A、B表示类型，f()表示类型转换，$\subseteq$ 表示子类与父类之间的继承关系，那么有以下定义：<br><strong>协变(Covariance)</strong>：当 A $\subseteq$ B时，f(A) $\subseteq$ f(B)成立；<br><strong>逆变(contravariance)</strong>：当A $\subseteq$ B时，f(B) $\subseteq$ f(A)成立；<br><strong>不变(invariance)</strong>：当A $\subseteq$ B时，以上均不成立，那么f(A)与f(B)之间不存在继承关系；</p>
 <p>先定义几个类之间的继承关系</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class Fruit&#123;&#125;       // base</span><br><span class="line"></span><br><span class="line">class Apple extends Fruit&#123;&#125;</span><br><span class="line"></span><br><span class="line">class Lemon extends Fruit&#123;&#125;</span><br><span class="line">class Eureka extends Lemon&#123;&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="数组是协变的"><a href="#数组是协变的" class="headerlink" title="数组是协变的"></a>数组是协变的</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Fruit[] fruit = new Lemon[20];</span><br><span class="line"></span><br><span class="line">fruit[0] = new Lemon();</span><br><span class="line">fruit[1] = new Eureka();</span><br><span class="line"></span><br><span class="line">try &#123;</span><br><span class="line">    fruit[2] = new Fruit();</span><br><span class="line">&#125;catch (Exception e)&#123;</span><br><span class="line">    System.out.println(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">运行结果：</span><br><span class="line">java.lang.ArrayStoreException: Baisc.type.generic.Fruit</span><br></pre></td></tr></table></figure>
-<p>首先，创建的数组为Lemon数组，同时在栈中创建一个fruit的引用指向lemon[]。因为实际数组为 Lemon Class，所以我们可以放入 Lemon及子类 Eureka，而当我们将Fruit基类放入时，排除类型异常，因为并不是所有Fruit都属于Lemon。</p>
+<p>首先，创建的数组为 Lemon 数组，同时在栈中创建一个 fruit 的引用指向 lemon[]。因为实际数组为 Lemon Class，所以我们可以放入 Lemon 及子类 Eureka，而当我们将 Fruit 基类放入时，排除类型异常，因为并不是所有 Fruit 都属于 Lemon。</p>
 <p>那么，为什么编译器不会发现问题呢？因为编译器会将在存储表中标识fruit是Fruit[]类型，所以编译期间通过，但在运行中才会去判断数组元素的类型约束。</p>
 <h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><p>为了解决这中问题，Java从引入泛型去解决编译期间的类型转换问题。但事实上，Java中的泛型不像 C++中的 <strong>模板泛型</strong> 一样，是真实的模板实例，十分灵活易于拓展。相反，而是一种语法糖，在编译期间会进行 <strong>类型擦除</strong>，最终都会替换成 <strong>非泛型上界</strong>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Lemon&gt; list = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">在编译期间都会进行类型擦除，最终都会转为 class java.util.ArrayList 这样无类型的集合类</span><br></pre></td></tr></table></figure>
@@ -95,80 +104,75 @@
 <li>set ( ) : 由于类型丢失，导致存放的时候只有 基类 Object才能放下。</li>
 </ul>
 
-      
 
       
-        
-    </div>
-  </div>
-  
+
+    </section>
     
-<nav id="article-nav">
-  
-  
-    <a href="/2018/08/31/装饰者模式/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Decorator pattern</div>
-    </a>
-  
-</nav>
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2019-07-17T14:30:27.000Z" itemprop="datePublished">
+              2019-07-17
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/Java/">Java</a> }
+  </li>
 
-  
+  <li class="meta-text">
+  { <a href="/tags/泛型/">泛型</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/协变与逆变/">协变与逆变</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
 </article>
 
-
-</section>
-        <aside id="sidebar">
-  <nav class="menus">
-  	<ul>
-  		<li><a href="/"><i class="icon icon-home"></i></a></li>
-  		
-			<li><a href="/archives"><i class="icon icon-fenlei"></i></a></li>
-  		
-  		
-			<li><a href="/tags"><i class="icon icon-tag"></i></a></li>
-  		
-  		
-  			<li><a href="https://github.com/Heiku" target="_blank"><i class="icon icon-github"></i></a></li>
-  		
-  	</ul>
-  </nav>
-  <a id="go-top" href="#"><i class="icon icon-up"></i></a>
-</aside>
-
-      </div>
-      <footer id="footer">
   
-	<div id="footer-info" class="inner">
-	  &copy; 2019 John Doe 
-	  - Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-	  - Theme <a href="https://github.com/hejianxian/hexo-theme-jane/" target="_blank">Jane</a>
-	</div>
+</div>
+
+            <footer>
+    <div>© 2016 - John Doe </div>
+    <div>
+    Powered by Hexo
+    </div>
 </footer>
 
+        </div>
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-    <a href="/tags" class="mobile-nav-link">Tag</a>
-  
-    <a href="https://github.com/Heiku" class="mobile-nav-link">Github</a>
-  
-</nav>
-    
+</div>
+<script src="/js/pager/dist/singlepager.js"></script>
+<script>
+var sp = new Pager('data-pager-shell')
 
-<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-  </div>
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 </body>
 </html>
