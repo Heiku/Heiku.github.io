@@ -72,6 +72,7 @@
 <p>当我们在需要扩展一个类的方法的时候，我们需要不断地继承原始方法或上一级方法的类，加上新的方法结构，这样就实现了对于原始方法的增强。当继承关系复杂的情景下，当我们要修改其中一个类方法，会导致其他增强方法的重写，这样使代码的耦合性太强，维护成本很高。对于这种情况，我们可以试试使用装饰者模式去解决这个问题。</p>
 <p>就以我们最经常看到的IO操作中，构造一个InputStreamReader，File读取path封装成FileInputStream，接着被装饰成InputStreamReader</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(path)));</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <p><strong>组成</strong></p>
 <p>Component接口：抽象组件，即最原始的方法，底层方法。</p>
 <p>ConcreteComponent类：实现了Component接口，具体的被装饰组件。</p>
