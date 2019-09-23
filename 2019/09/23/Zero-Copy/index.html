@@ -67,12 +67,13 @@
 
     <section>
       <h2 id="Linux-Zero-Copy"><a href="#Linux-Zero-Copy" class="headerlink" title="Linux Zero-Copy"></a>Linux Zero-Copy</h2><h3 id="什么是零拷贝"><a href="#什么是零拷贝" class="headerlink" title="什么是零拷贝 ?"></a>什么是零拷贝 ?</h3><p><strong>Zero Copy</strong> 是一种避免 CPU 将数据从一块存储拷贝到另一块存储的技术。 <strong>Zero Copy</strong> 可以减少数据拷贝和共享总线操作的次数，消除传输数据再存储器之间不必要的拷贝次数，从而有效地提高数据传输地效率。</p>
+<a id="more"></a>
 <h3 id="Linux-IO-Copy"><a href="#Linux-IO-Copy" class="headerlink" title="Linux IO Copy"></a>Linux IO Copy</h3><ul>
 <li>read() &amp;&amp; write()</li>
 </ul>
 <p>  当我们在访问一个网页的时候，在 Web Server (Linux) 会调用一下两个 文件读写函数：</p>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read(fd, buffer, len);</span><br><span class="line">write(sockfd, buffer, len);</span><br></pre></td></tr></table></figure>
-<p>  <img src="/images/zero-copy/no-zero-copy.jpeg" alt></p>
+<p>  <img src="/images/zeroCopy/no-zero-copy.png" alt></p>
 <p>  <strong>过程分析：</strong></p>
 <ol>
 <li><p>调用 read()，将具体的磁盘文件数据读取到 内核（kernel）的文件系统缓冲区中</p>
@@ -92,7 +93,7 @@
 </li>
 </ul>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sendfile(sockfd, fd, NULL, len);</span><br></pre></td></tr></table></figure>
-<p>  <img src="/images/zero-copy/zero-copy-two-cpoy.jpeg" alt></p>
+<p>  <img src="/images/zeroCopy/zero-copy-two-cpoy.png" alt></p>
 <p>  <strong>过程分析：</strong></p>
 <ol>
 <li><p>将磁盘中的文件数据拷贝到 内核中的文件缓冲区</p>
