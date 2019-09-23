@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Heiku</title>
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url(/assets/background.jpg)">
+        <div class='av-pic' style="background-image: url(/assets/head.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Heiku</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+            <a href="https://github.com/Heiku" class="Btn">
+              <li>Github</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="https://github.com/Heiku">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <ul class="Index">
+  
+    <header class='PageTitle'>
+        <h1>{ Zero-Copy }</h1>
+    </header>
+  
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2019/09/23/Zero-Copy/">Zero-Copy</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2019-09-23T08:32:43.000Z" itemprop="datePublished">
+    2019-09-23
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/Linux/">Linux</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Zero-Copy/">Zero-Copy</a> }
+  </li>
+
+
+  </ul>
+  
+  
+</div>
+
+    </header>
+    <div>
+      
+        <h2 id="Linux-Zero-Copy"><a href="#Linux-Zero-Copy" class="headerlink" title="Linux Zero-Copy"></a>Linux Zero-Copy</h2><h3 id="什么是零拷贝"><a href="#什么是零拷贝" class="headerlink" title="什么是零拷贝 ?"></a>什么是零拷贝 ?</h3><p><strong>Zero Copy</strong> 是一种避免 CPU 将数据从一块存储拷贝到另一块存储的技术。 <strong>Zero Copy</strong> 可以减少数据拷贝和共享总线操作的次数，消除传输数据再存储器之间不必要的拷贝次数，从而有效地提高数据传输地效率。</p>
+<h3 id="Linux-IO-Copy"><a href="#Linux-IO-Copy" class="headerlink" title="Linux IO Copy"></a>Linux IO Copy</h3><ul>
+<li>read() &amp;&amp; write()</li>
+</ul>
+<p>  当我们在访问一个网页的时候，在 Web Server (Linux) 会调用一下两个 文件读写函数：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read(fd, buffer, len);</span><br><span class="line">write(sockfd, buffer, len);</span><br></pre></td></tr></table></figure>
+<p>  <img src="/images/zero-copy/no-zero-copy.jpeg" alt></p>
+<p>  <strong>过程分析：</strong></p>
+<ol>
+<li><p>调用 read()，将具体的磁盘文件数据读取到 内核（kernel）的文件系统缓冲区中</p>
+</li>
+<li><p>接着是将 内核缓存区的数据 <strong>拷贝到</strong> 用户的缓冲区中</p>
+</li>
+<li><p>调用 write()，将用户缓冲区的数据写入到 <strong>内核 socket</strong> 的发送缓存区中</p>
+</li>
+<li><p>在 write() 返回后，内核会将 socket 发送区的数据拷贝到 网卡驱动中</p>
+</li>
+</ol>
+<p>  <strong>性能分析</strong>：</p>
+<p>  这个过程中，一共发生了四次 <strong>I/O copy</strong>， 这期间数据按照 kernel -&gt; user -&gt; kernel -&gt; hard drive 的路线，在 <strong>内核</strong> 到 <strong>用户</strong> 白白消耗了一圈的 性能开销，同时除了考虑 I/O 的性能开销，还要考虑系统 context switch 带来的开销，当系统调用 read() 时，系统会从 <strong>用户态</strong> 切换到 <strong>内核态</strong>，当 read() 返回时，又需要将 <strong>内核态</strong> 切换到 <strong>用户态</strong>，同理，write() 也会导致两次的 context switch，也就是说 read() 和 write() 总共会导致 4次的 I/O copy 和 4次上下文切换。</p>
+<ul>
+<li><p>sendfile()</p>
+<p>而采用 sendfile（）可减少在 read() &amp; write() 所产生的多次 I/O 拷贝和 context switch</p>
+</li>
+</ul>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sendfile(sockfd, fd, NULL, len);</span><br></pre></td></tr></table></figure>
+<p>  <img src="/images/zero-copy/zero-copy-two-cpoy.jpeg" alt></p>
+<p>  <strong>过程分析：</strong></p>
+<ol>
+<li><p>将磁盘中的文件数据拷贝到 内核中的文件缓冲区</p>
+</li>
+<li><p>向 socket buffer 中 <strong>追加</strong> 当前的数据在 kernel buffer 中的位置和偏移量</p>
+</li>
+<li><p>根据 socket buffer 中的位置和偏移量，将 kernel buffer 中的数据 <strong>copy</strong> 到 网卡驱动中</p>
+</li>
+</ol>
+<p>  <strong>性能分析：</strong></p>
+<p>  这次过程中，sendfile() 相比于 read() &amp; write() ，对于将要发送的数据 (socket) ，采用的是记录下对应的 数据在 kernel buffer 中的 <strong>位置和偏移量</strong>，在最后要发送 socket buffer的数据到网卡设备时，只需通过 位置及偏移量 找到对应 kernel buffer的数据。相比于 <strong>read / write</strong>， 少了两次 I/O copy，和两次 context switch，性能有了很大的提升。</p>
+<p><strong>总结</strong></p>
+<p>为什么说是 <strong>zero-copy</strong> 呢？ 因为在 sendfile() 调用的过程中，对于内核 kernel ，整个过程中是零拷贝的，不涉及 内核到用户之间的数据拷贝。</p>
+
+      
+    </div>
+</article>
+
+    </li>
+  
+</ul>
+
+
+
+            <footer>
+    <div>© 2016 - John Doe </div>
+    <div>
+    Powered by Hexo
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<script src="/js/pager/dist/singlepager.js"></script>
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

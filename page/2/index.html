@@ -67,6 +67,64 @@
     <header class="title">
       
         <h1>
+          <a href="/2018/04/21/HashMap-源码分析/">HashMap 源码分析</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2018-04-21T12:51:58.000Z" itemprop="datePublished">
+    2018-04-21
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/Java/">Java</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/源码分析/">源码分析</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/HashMap/">HashMap</a> }
+  </li>
+
+
+  </ul>
+  
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p><strong>特征</strong></p>
+<ul>
+<li>根据键的 <strong>hascode</strong> 值存储数据，可直接定位值，具有很快的数据访问数组</li>
+<li>遍历的顺序不确定</li>
+<li>最多允许一条 null 键，允许多条记录的键为 null</li>
+<li>非线程安全<br>  可使用 Collections.synchronizedMap 使 HashMap 具有线程安全的能力 或 ConcurrentHashMap</li>
+</ul>
+<p><strong>底层结构</strong></p>
+<p>底层结构采用了数组，而数组的每一个元素都是多个 Node 构成的链表，当数组超过 threshold 时，数组将会扩容。</p>
+<p>数组中的每一个都相当于一个单向链表，key 通过 hash() 后，相同的键值对会加入到链表中，当桶中的数过多时（链表长度 &gt; 8），将会转化为 红黑树，相比与Jdk 1.7， Jdk 1.8 中当链表过长时，链表转化为红黑树，在维护红黑树时，最坏情况下查找的时间复杂度为 O(log n)，比起单链表的 O(1) ~ O(n), 时间复杂度降低了，但所需要维护的空间占用却更多。</p>
+        
+          <div class="more-link">
+            <a href="/2018/04/21/HashMap-源码分析/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2018/04/15/ArrayList-源码分析/">ArrayList 源码分析</a>
         </h1>
       
