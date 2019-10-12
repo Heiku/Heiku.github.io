@@ -67,6 +67,98 @@
     <header class="title">
       
         <h1>
+          <a href="/2019/10/12/SpringBoot启动分析-run/">SpringBoot启动分析-run()</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2019-10-12T13:42:31.000Z" itemprop="datePublished">
+    2019-10-12
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/Spring/">Spring</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/SpringBoot/">SpringBoot</a> }
+  </li>
+
+
+  </ul>
+  
+  
+</div>
+
+    </header>
+    <div>
+      
+        <h2 id="SpringApplication-run"><a href="#SpringApplication-run" class="headerlink" title="SpringApplication.run()"></a>SpringApplication.run()</h2><p>在上一篇中，我们分析了 <strong>SpringBoot</strong> 启动过程中的 <strong>@SpringBootApplocation</strong>，其主要功能就是加载对应的 <strong>@Configuration</strong> 及 <strong>Auto Configure</strong> 模块中的组件信息，并将组件内容加入到容器中。</p>
+<p>这篇将开始分析 <strong>SpringBoot</strong> 的启动过程，而启动过程中最核心的两个部分就是 <strong>SpringApplication 的启动过程</strong> 及 <strong>SpringApplication 的 run 方法</strong> ，下面为分析过程：</p>
+<h3 id="SpringApplication-的构造函数"><a href="#SpringApplication-的构造函数" class="headerlink" title="SpringApplication 的构造函数"></a>SpringApplication 的构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) &#123;</span><br><span class="line">	    ...</span><br><span class="line">	    // 设置启动的源Class，即启动的SpringBootLearningApplication.class对象，包含了对应的 classLoader</span><br><span class="line">        this.primarySources = new LinkedHashSet(Arrays.asList(primarySources));</span><br><span class="line">        </span><br><span class="line">        // 设置了 webApplication的类型，尚未配置web，所以当前为 NONE （Servlet, Reactive）</span><br><span class="line">        this.webApplicationType = WebApplicationType.deduceFromClasspath();</span><br><span class="line">        </span><br><span class="line">        // 借助 SpringFactoriesLoader 找到 /META-INF/spring.factories 下的所有配置 key 为 ApplicationContextInitializer （所有的应用初始化器），实例化并设置到 setInitializers 这个集合属性中</span><br><span class="line">        this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class));</span><br><span class="line">        </span><br><span class="line">        // 和上面一样， 通过 SpringFactoriesLoader 找到所有配置 key 为 ApplicationListener (所有的应用程序监听器)，实例化并设置到 setListeners 集合属性中</span><br><span class="line">        this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class));</span><br><span class="line">        </span><br><span class="line">       // 找到 StackTrace （方法调用堆栈）中的 main 方法，即入口类的名字，并 Class.forName 得到类对象</span><br><span class="line">        this.mainApplicationClass = this.deduceMainApplicationClass();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="ApplicationEvent"><a href="#ApplicationEvent" class="headerlink" title="ApplicationEvent"></a>ApplicationEvent</h3><p><strong>SpringBoot</strong> 中使用了很多 <strong>Event</strong> 去响应容器状态，而 <strong>ApplicationEvent</strong> 为多个组件 bean 提供了消息通信的支持，其中就包括了接下来在 <strong>run( )</strong> 使用到的 <strong>SpringApplicationEvent</strong> ,它实现了全局的 base <strong>ApplicationEvent</strong>，并扩展为多个 Spring 启动中的事件 Event，如下：</p>
+<ol>
+<li><strong>ApplicationContextInitializedEvent</strong>  </li>
+<li><strong>ApplicationEnvironmentPreparedEvent</strong>  </li>
+<li><strong>ApplicationPreparedEvent</strong></li>
+<li><strong>ApplicationStartedEvent</strong></li>
+<li><strong>ApplicationReadyEvent</strong></li>
+<li><strong>ApplicationFailedEvent</strong></li>
+<li><strong>ApplicationStartingEvent</strong></li>
+</ol>
+<p><img src="/images/springboot/spring-boot-extend-applicationEvent.png" alt></p>
+<p><br></p>
+<p><strong>事件的传递过程如下：</strong></p>
+<ol>
+<li>SpringApplicationRunListener 调用对应的操作如 ( starting, running, contextLoad… )</li>
+<li>SpringApplicationRunListener 内部针对不同的事件，遍历内部集合调用对应的方法，具体实现类为 EventPublishingRunListener 调用</li>
+<li>EventPublishingRunListener  将对应的操作 ( starting, environmentPrepared.. ) 封装成对应的事件并通过属性 initialMulticaster push 广播出去</li>
+<li>最后广播出去的事件如 ( ApplicationStartingEvent ) 会被 SpringApplication 中的 listeners 属性监听处理</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// SpringApplication.class</span><br><span class="line">public ConfigurableApplicationContext run(String... args) &#123;</span><br><span class="line">	listeners.starting();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// SpringApplicationRunListeners </span><br><span class="line">public void starting() &#123;</span><br><span class="line">        Iterator var1 = this.listeners.iterator();</span><br><span class="line"></span><br><span class="line">        while(var1.hasNext()) &#123;</span><br><span class="line">            SpringApplicationRunListener listener = (SpringApplicationRunListener)var1.next();</span><br><span class="line">            listener.starting();</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// EventPublishingRunListeners.class</span><br><span class="line">public void starting() &#123;</span><br><span class="line">        this.initialMulticaster.multicastEvent(new ApplicationStartingEvent(this.application, this.args));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<p><strong>EventPublishingRunListener 具体操作事件的广播推送如下：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> // EventPublishingRunListener 事件推送监听器</span><br><span class="line"> </span><br><span class="line"> // Spring 启动, run()的时候立即运行，ApplicationStartingEvent</span><br><span class="line"> public void starting() &#123;</span><br><span class="line">       this.initialMulticaster.multicastEvent(new ApplicationStartingEvent(this.application, this.args));</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   // 环境信息准备好并准备创建 ApplicationContext 之前, ApplicationEnvironmentPreparedEvent</span><br><span class="line">   public void environmentPrepared(ConfigurableEnvironment environment) &#123;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">//ApplicationContext 创建完成，并准备加载 source时调用, ApplicationPreparedEvent</span><br><span class="line">   public void contextPrepared(ConfigurableApplicationContext context) &#123;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">// ApplicationContext 已经创建并加载，在 refresh() 之前调用, ApplicationPreparedEvent</span><br><span class="line">   public void contextLoaded(ConfigurableApplicationContext context) &#123;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   // Application refresh()后，容器正式启动, ApplicationStartedEvent</span><br><span class="line">   public void started(ConfigurableApplicationContext context) &#123;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">// Spring 正式运行， ApplicationReadyEvent</span><br><span class="line">   public void running(ConfigurableApplicationContext context) &#123;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">// 当运行失败时， ApplicationFailedEvent</span><br><span class="line">   public void failed(ConfigurableApplicationContext context, Throwable exception) &#123;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="SpringApplication-run-1"><a href="#SpringApplication-run-1" class="headerlink" title="SpringApplication.run()"></a>SpringApplication.run()</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">public ConfigurableApplicationContext run(String... args) &#123;</span><br><span class="line">	    // 启动 StopWatch，开始记录任务的执行时间</span><br><span class="line">        StopWatch stopWatch = new StopWatch();</span><br><span class="line">        stopWatch.start();</span><br><span class="line">        </span><br><span class="line">        // 定义 context</span><br><span class="line">        ConfigurableApplicationContext context = null;</span><br><span class="line">        Collection&lt;SpringBootExceptionReporter&gt; exceptionReporters = new ArrayList();</span><br><span class="line">        </span><br><span class="line">        // 配置 System Property java.awt.headless = true，用于控制台下的调试</span><br><span class="line">        this.configureHeadlessProperty();</span><br><span class="line">        </span><br><span class="line">        // 获取 SpringApplicationRunListeners，实例为 EventPublishingRunListener</span><br><span class="line">        SpringApplicationRunListeners listeners = this.getRunListeners(args);</span><br><span class="line">        </span><br><span class="line">        // 封装SpringApplicationEvent，即 ApplicationStartingEvent 进行广播推送</span><br><span class="line">        listeners.starting();</span><br><span class="line">		</span><br><span class="line">	   // 定义异常集合，用后于catch &amp;&amp; handle</span><br><span class="line">        Collection exceptionReporters;</span><br><span class="line">        try &#123;</span><br><span class="line">        </span><br><span class="line">        	// 创建应用程序参数类</span><br><span class="line">            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);</span><br><span class="line">            </span><br><span class="line">            // 根据 WebType 创建 对应的 Environment 对象，用于获取 properties,profile</span><br><span class="line">            // 同时EventPublishingRunListeners 广播 ApplicationEnvironmentPreparedEvent</span><br><span class="line">            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);</span><br><span class="line">            </span><br><span class="line">            // 在 Environment对象中配置需要忽略的 bean 信息</span><br><span class="line">            this.configureIgnoreBeanInfo(environment);</span><br><span class="line">            </span><br><span class="line">            // 打印 banner</span><br><span class="line">            Banner printedBanner = this.printBanner(environment);</span><br><span class="line">            </span><br><span class="line">            // 创建 ApplicationContext (AnnotationConfigApplicationContext)</span><br><span class="line">            // 通过 WebType 得到对应的 ApplicationContextClass，通过反射的到对应的ApplicationContext </span><br><span class="line">            context = this.createApplicationContext();</span><br><span class="line">            </span><br><span class="line">            // 通过 SpringFactoriesLoader 获取配置key的 SpringBoot异常报告器</span><br><span class="line">            exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]&#123;ConfigurableApplicationContext.class&#125;, context);</span><br><span class="line">            </span><br><span class="line">            // ApplicationContext pre handle</span><br><span class="line">            // 1.为Context 设置 environment</span><br><span class="line">            // 2.为之前加载的 AppplicationInitializers 遍历 initialize(context)，进行上下文初始化</span><br><span class="line">            // 3.创建SpringDefinitionLoader，用于加载 xml 或 JavaConfig 中的bean</span><br><span class="line">            this.prepareContext(context, environment, listeners, applicationArguments, printedBanner);</span><br><span class="line">            </span><br><span class="line">            // 刷新应用上下文 ApplicationContext</span><br><span class="line">            this.refreshContext(context);</span><br><span class="line">            </span><br><span class="line">            // 刷新上下文后的额外操作</span><br><span class="line">            this.afterRefresh(context, applicationArguments);</span><br><span class="line">            </span><br><span class="line">            // 停止时间计时</span><br><span class="line">            stopWatch.stop();</span><br><span class="line">            if (this.logStartupInfo) &#123;</span><br><span class="line">                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">		   // 启动加载的 listener list</span><br><span class="line">            listeners.started(context);</span><br><span class="line">            </span><br><span class="line">            // 添加 ApplicationRunners 和 CommandLineRunners 相关的 Runners </span><br><span class="line">            this.callRunners(context, applicationArguments);</span><br><span class="line">        &#125; catch (Throwable var10) &#123;</span><br><span class="line">        	// 这里用于处理之前捕获的异常集合</span><br><span class="line">            this.handleRunFailure(context, var10, exceptionReporters, listeners);</span><br><span class="line">            throw new IllegalStateException(var10);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">        	// 启动加载的 listener list</span><br><span class="line">            listeners.running(context);</span><br><span class="line">            return context;</span><br><span class="line">        &#125; catch (Throwable var9) &#123;</span><br><span class="line">            this.handleRunFailure(context, var9, exceptionReporters, (SpringApplicationRunListeners)null);</span><br><span class="line">            throw new IllegalStateException(var9);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>启动 <strong>Spring Boot</strong> 的过程大致分为两部分，一部分为：<strong>SpringApplication 的构造过程</strong> 和 <strong>SpringApplication.run() 具体的运行过程</strong>  </p>
+<p><strong>SpringApplication</strong> 的构造方法主要有以下过程：</p>
+<ol>
+<li>获取并设置 <strong>primarySources</strong>， 即程序的入口 Class</li>
+<li>获取设置 <strong>webApplicationType</strong></li>
+<li>通过 <strong>SpringFactoriesLoader </strong>，加载 <strong>spring.factories</strong> 中的 <strong>Initializers</strong>，找到所有初始化器，并设置属性</li>
+<li>同理，找到所有的应用程序监听器，并设置到 <strong>Listeners</strong> 属性中</li>
+<li>找到运行的 <strong>main</strong> 主类，并设置到属性 <strong>mainApplicationClass</strong></li>
+</ol>
+<p><strong>SpringApplication run()</strong> 的执行过程如下：</p>
+<ol>
+<li>启动 <strong>StopWatch</strong>，开始记录任务的执行时间</li>
+<li>定义 <strong>ApplicationContext</strong>，并通过 <strong>EventPublishingRunListeners</strong> 广播 <strong>ApplicationStartingEvent</strong> 事件，事件将会被加载的 <strong>listeners</strong> 监听并处理</li>
+<li>创建 应用参数类<strong>ApplicationArguments</strong>  及根据 <strong>WebApplicationType</strong> 创建对应的 <strong>Environment</strong>，用于记录系统中的 <strong>Properties</strong></li>
+<li>创建 <strong>ApplicationContext</strong></li>
+<li>进行 <strong>prepareContext</strong>，对 <strong>context</strong> 设置environment，并遍历加载的 <strong>initializer</strong> 初始化 context，最后创建 <strong>SpringDefinitionLoader</strong></li>
+<li><strong>refreshContext</strong>，完成 <strong>bean</strong> 的解析，开启 <strong>processor</strong> 接口等工作</li>
+<li>加载的 <strong>listeners</strong> 进行 start(), running()，同时加入 <strong>SpringRunners</strong></li>
+</ol>
+<p><br></p>
+<p><strong>参考</strong></p>
+<p><a href="http://fangjian0423.github.io/2017/04/30/springboot-startup-analysis/" target="_blank" rel="noopener">SpringBoot源码分析之SpringBoot的启动过程</a><br><a href="http://www.jerome.xin/articles/spring-boot-startup-execution-process" target="_blank" rel="noopener">Spring Boot 启动深究SpringApplication执行流程</a></p>
+
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2019/10/10/SpringBoot启动分析-@SpringBootApplication/">SpringBoot启动过程 - @SpringBootApplication</a>
         </h1>
       
@@ -589,68 +681,6 @@
         
           <div class="more-link">
             <a href="/2018/07/24/LinkedHashMap-源码分析/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2018/07/22/ConcurrentHashMap-源码分析/">ConcurrentHashMap-源码分析</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2018-07-22T15:29:04.000Z" itemprop="datePublished">
-    2018-07-22
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/源码分析/">源码分析</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/ConcurrentHashMap/">ConcurrentHashMap</a> }
-  </li>
-
-
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p><strong>产生原因</strong></p>
-<ul>
-<li>在多线程环境下，HashMap在扩容时会产生死循环，而线程安全的HashTable，在涉及多线程的操作都采用Synchronized锁住整个数组表，即所有线程在争夺一个资源，效率很低。</li>
-</ul>
-<p><strong>1.7 vs 1.8</strong></p>
-<ul>
-<li>1.7的 ConcurrentHashMap 采用的是分段锁的设计，底层数据结构是Segment + HashEntry，Segment实现了ReentrantLock，自带锁的功能，每次只锁定对应的Segment，多个线程争夺同个segment时，通过tryLock争夺，锁定的粒度下降了，性能也就提高了不少。</li>
-</ul>
-<ul>
-<li>1.8的ConcurrentHashMap 摒弃了分段锁的概念（Segment），沿用了HashMap的思想，基于数组 + 链表 + 红黑树，底层采用的Node + CAS + Synchronized，保证并发的安全性，锁住的是粒度更小的Node。</li>
-</ul>
-<p><strong>分析</strong></p>
-<p>内部类Node, 实现了Map.Entry，用于存储<k,v>键值对，节点用 volatile修饰，保证了多线程间的可见性，同时注意 value也用volatile修饰，无法通过setValue设置value变量。</k,v></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    final int hash;</span><br><span class="line">    final K key;</span><br><span class="line">    volatile V val;</span><br><span class="line">    volatile Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(int hash, K key, V val, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        this.hash = hash;</span><br><span class="line">        this.key = key;</span><br><span class="line">        this.val = val;</span><br><span class="line">        this.next = next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public final K getKey()       &#123; return key; &#125;</span><br><span class="line">    public final V getValue()     &#123; return val; &#125;</span><br><span class="line">    public final int hashCode()   &#123; return key.hashCode() ^ val.hashCode(); &#125;</span><br><span class="line">    public final String toString()&#123; return key + &quot;=&quot; + val; &#125;</span><br><span class="line">    public final V setValue(V value) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public final boolean equals(Object o) &#123;</span><br><span class="line">        Object k, v, u; Map.Entry&lt;?,?&gt; e;</span><br><span class="line">        return ((o instanceof Map.Entry) &amp;&amp;</span><br><span class="line">                (k = (e = (Map.Entry&lt;?,?&gt;)o).getKey()) != null &amp;&amp;</span><br><span class="line">                (v = e.getValue()) != null &amp;&amp;</span><br><span class="line">                (k == key || k.equals(key)) &amp;&amp;</span><br><span class="line">                (v == (u = val) || v.equals(u)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Virtualized support for map.get(); overridden in subclasses.</span><br><span class="line">     */</span><br><span class="line">    Node&lt;K,V&gt; find(int h, Object k) &#123;</span><br><span class="line">        Node&lt;K,V&gt; e = this;</span><br><span class="line">        if (k != null) &#123;</span><br><span class="line">            do &#123;</span><br><span class="line">                K ek;</span><br><span class="line">                if (e.hash == h &amp;&amp;</span><br><span class="line">                    ((ek = e.key) == k || (ek != null &amp;&amp; k.equals(ek))))</span><br><span class="line">                    return e;</span><br><span class="line">            &#125; while ((e = e.next) != null);</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-        
-          <div class="more-link">
-            <a href="/2018/07/22/ConcurrentHashMap-源码分析/#more">Read On »</a>
           </div>
         
       
