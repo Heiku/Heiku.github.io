@@ -101,21 +101,21 @@
 <h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>启动 <code>Spring Boot</code> 的过程大致分为两部分，一部分为：<code>SpringApplication 的构造过程</code> 和 <code>SpringApplication.run() 具体的运行过程</code>  </p>
 <p><strong>SpringApplication</strong> 的构造方法主要有以下过程：</p>
 <ol>
-<li>获取并设置 <strong>primarySources</strong>， 即程序的入口 Class</li>
-<li>获取设置 <strong>webApplicationType</strong></li>
-<li>通过 <strong>SpringFactoriesLoader </strong>，加载 <strong>spring.factories</strong> 中的 <strong>Initializers</strong>，找到所有初始化器，并设置属性</li>
-<li>同理，找到所有的应用程序监听器，并设置到 <strong>Listeners</strong> 属性中</li>
-<li>找到运行的 <strong>main</strong> 主类，并设置到属性 <strong>mainApplicationClass</strong></li>
+<li>获取并设置 primarySources， 即程序的入口 Class</li>
+<li>获取设置 webApplicationType</li>
+<li>通过 <strong>SpringFactoriesLoader</strong> ，加载 spring.factories 中的 Initializers ，找到所有初始化器，并设置属性</li>
+<li>同理，找到所有的应用程序监听器，并设置到 Listeners 属性中</li>
+<li>找到运行的 <code>main</code> 主类，并设置到属性 mainApplicationClass</li>
 </ol>
 <p><strong>SpringApplication run()</strong> 的执行过程如下：</p>
 <ol>
-<li>启动 <strong>StopWatch</strong>，开始记录任务的执行时间</li>
-<li>定义 <strong>ApplicationContext</strong>，并通过 <strong>EventPublishingRunListeners</strong> 广播 <strong>ApplicationStartingEvent</strong> 事件，事件将会被加载的 <strong>listeners</strong> 监听并处理</li>
-<li>创建 应用参数类<strong>ApplicationArguments</strong>  及根据 <strong>WebApplicationType</strong> 创建对应的 <strong>Environment</strong>，用于记录系统中的 <strong>Properties</strong></li>
-<li>创建 <strong>ApplicationContext</strong></li>
-<li>进行 <strong>prepareContext</strong>，对 <strong>context</strong> 设置environment，并遍历加载的 <strong>initializer</strong> 初始化 context，最后创建 <strong>SpringDefinitionLoader</strong></li>
-<li><strong>refreshContext</strong>，完成 <strong>bean</strong> 的解析，开启 <strong>processor</strong> 接口等工作</li>
-<li>加载的 <strong>listeners</strong> 进行 start(), running()，同时加入 <strong>SpringRunners</strong></li>
+<li>启动 StopWatch，开始记录任务的执行时间</li>
+<li>定义 <code>ApplicationContext</code>，并通过 <code>EventPublishingRunListeners</code> 广播 <code>ApplicationStartingEvent</code> 事件，事件将会被加载的 <code>listeners</code> 监听并处理</li>
+<li>创建应用参数类 ApplicationArguments 及根据 WebApplicationType 创建对应的 Environment，用于记录系统中的 Properties</li>
+<li>创建 ApplicationContext</li>
+<li>进行 <code>prepareContext</code>，对 context 设置environment，并遍历加载的 <code>initializer</code> 初始化 context，最后创建 <code>SpringDefinitionLoader</code></li>
+<li><code>refreshContext</code>，完成 bean 的解析，开启 processor 接口等工作</li>
+<li>加载的 listeners 进行 start(), running()，同时加入 SpringRunners</li>
 </ol>
 <p><br></p>
 <p><strong>参考</strong></p>

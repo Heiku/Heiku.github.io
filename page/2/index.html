@@ -67,6 +67,59 @@
     <header class="title">
       
         <h1>
+          <a href="/2018/07/24/LinkedHashMap-源码分析/">LinkedHashMap-源码分析</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2018-07-24T03:08:09.000Z" itemprop="datePublished">
+    2018-07-24
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/Java/">Java</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/LinkedHashMap/">LinkedHashMap</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/源码分析/">源码分析</a> }
+  </li>
+
+
+  </ul>
+  
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p><strong>数据结构</strong></p>
+<p>LinkedHashMap 继承了HashMap,对HashMap进行了增强，通过内部维护了双向链表，使LinkedHashMap拥有了顺序访问的功能，提供了有序性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>内部构造</strong></p>
+<p>Entry内部维护了 before 和 after 两个entry，用于构建双向链表entry之间的指向关系，同时accessOrder 用于设置LinkedHashMap的读取是按照访问顺序还是插入顺序，通过这个accessOrder属性可以很容易实现 LRU<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">    Entry&lt;K,V&gt; before, after;</span><br><span class="line">    Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        super(hash, key, value, next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 头节点（最旧未使用）</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line"></span><br><span class="line">// 尾节点 （最近使用）</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line"></span><br><span class="line">// 设置LinkedHashMap的读取顺序</span><br><span class="line">//      false(default)：插入顺序</span><br><span class="line">//      true：访问顺序</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure></p>
+        
+          <div class="more-link">
+            <a href="/2018/07/24/LinkedHashMap-源码分析/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2018/07/22/ConcurrentHashMap-源码分析/">ConcurrentHashMap-源码分析</a>
         </h1>
       
