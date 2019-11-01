@@ -4,7 +4,7 @@
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Heiku</title>
+  <title>SpringBoot启动分析-BeanDefinition | Heiku</title>
   
   
   <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
@@ -59,47 +59,14 @@
 
     <div class="container">
         <div data-pager-shell>
-            <ul class="Index">
-  
+            <div>
+  <article class='ContentView'>
     <header class='PageTitle'>
-        <h1>{ Spring }</h1>
+        <h1>SpringBoot启动分析-BeanDefinition</h1>
     </header>
-  
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2019/11/01/SpringBoot启动分析-BeanDefinition/">SpringBoot启动分析-BeanDefinition</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2019-11-01T10:35:17.000Z" itemprop="datePublished">
-    2019-11-01
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/Spring/">Spring</a> }
-  </li>
 
-  <li class="meta-text">
-  { <a href="/tags/SpringBoot/">SpringBoot</a> }
-  </li>
-
-
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <h2 id="BeanDefinition"><a href="#BeanDefinition" class="headerlink" title="BeanDefinition"></a>BeanDefinition</h2><p>BeanDefinition 是一个描述 Bean 信息的接口，它描述和定义了一个创建 bean 的所有基本信息，其中就包括了以下属性</p>
+    <section>
+      <h2 id="BeanDefinition"><a href="#BeanDefinition" class="headerlink" title="BeanDefinition"></a>BeanDefinition</h2><p>BeanDefinition 是一个描述 Bean 信息的接口，它描述和定义了一个创建 bean 的所有基本信息，其中就包括了以下属性</p>
 <ol>
 <li>parentName：     双亲 bean 的名称</li>
 <li>beanClassName：  bean 的类名，但一定有，因为如果该 bean 是由工厂bean 产生的，那么这里的 beanClassName 为空</li>
@@ -138,28 +105,21 @@
 <li><a href="https://blog.csdn.net/andy_zhang2007/article/details/85421417" target="_blank" rel="noopener">BeanDefinition</a>  </li>
 </ul>
 
-      
-    </div>
-</article>
 
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
       
-        <h1>
-          <a href="/2019/10/30/SpringBoot-启动分析-refresh/">SpringBoot 启动分析-refresh()</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2019-10-30T06:44:20.000Z" itemprop="datePublished">
-    2019-10-30
-  </time>
-  
-  | 
-  <ul>
+
+    </section>
     
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2019-11-01T10:35:17.000Z" itemprop="datePublished">
+              2019-11-01
+            </time>
+          </div>
+          
+            <div>
+              tags: 
   <li class="meta-text">
   { <a href="/tags/Spring/">Spring</a> }
   </li>
@@ -169,180 +129,15 @@
   </li>
 
 
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <h2 id="refresh"><a href="#refresh" class="headerlink" title="refresh()"></a>refresh()</h2><p><br></p>
-<p>上一篇分析 <code>SpringBoot</code> 启动过程中的 构造过程及 <code>run()</code>，在构造的过程中，主要是根据应用程序的类型设置 <code>WebApplicationType</code>，同时根据 <code>spring.factories</code>的配置读取初始化容器的一些监听器 <code>listeners</code> 和初始化器 <code>initializers</code>。  </p>
-<p>而在 <code>run()</code>中，主要是对应用上下文 <code>ApplicationContext</code> 创建并进行初始化，设置 <code>WebApplicationType</code>对应的 <code>environment</code>，然后 <code>refreshContext(context)</code> ，最后加载 <code>listeners start(),running</code> 并加入 <code>SpringRunners</code>.  </p>
-<p>在 <code>refreshContext(context)</code> 主要有下面几个工作：</p>
-<ol>
-<li><a href="#prepareRefresh">prepareRefresh()</a></li>
-<li><a href="#prepareBeanFactory">prepareBeanFactory()</a></li>
-<li><a href="#postProcessBeanFactory">postProcessBeanFactory()</a></li>
-<li><a href="#invokeBeanFactoryPostProcessors">invokeBeanFactoryPostProcessors()</a></li>
-<li><a href="#registerBeanPostProcessors">registerBeanPostProcessors()</a></li>
-<li><a href="#initMessageSource">initMessageSource()</a></li>
-<li><a href="#initApplicationEventMulticaster">initApplicationEventMulticaster()</a></li>
-<li><a href="#onRefresh">onRefresh()</a></li>
-<li><a href="#registerListeners">registerListeners()</a></li>
-<li><a href="#finishBeanFactoryInitialization">finishBeanFactoryInitialization()</a></li>
-<li><a href="#finishRefresh">finishRefresh()</a><br><br></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">  public void refresh() throws BeansException, IllegalStateException &#123;</span><br><span class="line">// 获取监视器锁</span><br><span class="line">      synchronized(this.startupShutdownMonitor) &#123;</span><br><span class="line">      </span><br><span class="line">      	// 刷新上下文前的准备，记录状态，验证必要属性</span><br><span class="line">          this.prepareRefresh();</span><br><span class="line">          ConfigurableListableBeanFactory beanFactory = this.obtainFreshBeanFactory();</span><br><span class="line">          </span><br><span class="line">          // 配置标准的 beanFactory，设置 classloader, bean表达解析器，同时注册重要的bean组件</span><br><span class="line">          this.prepareBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">          try &#123;</span><br><span class="line">          	// 模板方法，交由子类对 beanFactory 进行后置处理</span><br><span class="line">              this.postProcessBeanFactory(beanFactory);</span><br><span class="line">              </span><br><span class="line">              // 调用 beanFactoryPostPorcessor </span><br><span class="line">              this.invokeBeanFactoryPostProcessors(beanFactory);</span><br><span class="line">              </span><br><span class="line">              // 注册容器中的 beanPostProcessors</span><br><span class="line">              this.registerBeanPostProcessors(beanFactory);</span><br><span class="line">              </span><br><span class="line">              // 初始化国际工具类 MessageSource</span><br><span class="line">              this.initMessageSource();</span><br><span class="line">              </span><br><span class="line">              // 初始化并注册事件广播器 ApplicationEventMulticaster</span><br><span class="line">              this.initApplicationEventMulticaster();</span><br><span class="line">              </span><br><span class="line">              // 模板方法，根据应用的具体类型交由子类具体处理，如果是web类型，通常是构建webServer</span><br><span class="line">              this.onRefresh();</span><br><span class="line">              </span><br><span class="line">              // 注册容器中的监听器，包括spring.factories 和 自定义 bean listenr</span><br><span class="line">              this.registerListeners();</span><br><span class="line">              </span><br><span class="line">              // 实例化所有的单例 bean （非 Lazy）,beanPostProcessor 开始起作用</span><br><span class="line">              this.finishBeanFactoryInitialization(beanFactory);</span><br><span class="line">              </span><br><span class="line">              // refresh() 后的额外工作，包括清除resource cahce，注册 LifeCycleProcessor及发布上下文已经刷新的事件 ContexntRefreshedEvent</span><br><span class="line">              this.finishRefresh();</span><br><span class="line">          &#125; catch (BeansException var9) &#123;</span><br><span class="line">		</span><br><span class="line">		// 如果刷新上下文的过程中，出现异常，那么销毁所有已经创建的 bean</span><br><span class="line">              this.destroyBeans();</span><br><span class="line">              </span><br><span class="line">              // 重置 context 的刷新状态，即将 active = false</span><br><span class="line">              this.cancelRefresh(var9);</span><br><span class="line">              throw var9;</span><br><span class="line">          &#125; finally &#123;</span><br><span class="line">          	// 无论失败与否，已经不再需要 bean metadata，重置 Spring 的内核缓存</span><br><span class="line">              this.resetCommonCaches();</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-        
-          <div class="more-link">
-            <a href="/2019/10/30/SpringBoot-启动分析-refresh/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2019/10/12/SpringBoot启动分析-run/">SpringBoot启动过程-run()</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2019-10-12T13:42:31.000Z" itemprop="datePublished">
-    2019-10-12
-  </time>
-  
-  | 
-  <ul>
+            </div>
+          
+      </section>
     
-  <li class="meta-text">
-  { <a href="/tags/Spring/">Spring</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/SpringBoot/">SpringBoot</a> }
-  </li>
-
-
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <h2 id="SpringApplication-run"><a href="#SpringApplication-run" class="headerlink" title="SpringApplication.run()"></a>SpringApplication.run()</h2><p>在上一篇中，我们分析了 <code>SpringBoot</code> 启动过程中的 <code>@SpringBootApplocation</code> ，其主要功能就是加载对应的 <code>@Configuration</code> 及 <code>Auto Configure</code> 模块中的组件信息，并将组件内容加入到容器中。</p>
-<p>这篇将开始分析 <code>SpringBoot</code> 的启动过程，而启动过程中最核心的两个部分就是 <code>SpringApplication 的启动过程</code> 及 <code>SpringApplication 的 run 方法</code> ，下面为分析过程：</p>
-<h3 id="SpringApplication-的构造函数"><a href="#SpringApplication-的构造函数" class="headerlink" title="SpringApplication 的构造函数"></a>SpringApplication 的构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) &#123;</span><br><span class="line">	    ...</span><br><span class="line">	    // 设置启动的源Class，即启动的SpringBootLearningApplication.class对象，包含了对应的 classLoader</span><br><span class="line">        this.primarySources = new LinkedHashSet(Arrays.asList(primarySources));</span><br><span class="line">        </span><br><span class="line">        // 设置了 webApplication的类型，尚未配置web，所以当前为 NONE （Servlet, Reactive）</span><br><span class="line">        this.webApplicationType = WebApplicationType.deduceFromClasspath();</span><br><span class="line">        </span><br><span class="line">        // 借助 SpringFactoriesLoader 找到 /META-INF/spring.factories 下的所有配置 key 为 ApplicationContextInitializer </span><br><span class="line">          （所有的应用初始化器），实例化并设置到 setInitializers 这个集合属性中</span><br><span class="line">        this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class));</span><br><span class="line">        </span><br><span class="line">        // 和上面一样， 通过 SpringFactoriesLoader 找到所有配置 key 为 ApplicationListener (所有的应用程序监听器)，</span><br><span class="line">            实例化并设置到 setListeners 集合属性中</span><br><span class="line">        this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class));</span><br><span class="line">        </span><br><span class="line">       // 找到 StackTrace （方法调用堆栈）中的 main 方法，即入口类的名字，并 Class.forName 得到类对象</span><br><span class="line">        this.mainApplicationClass = this.deduceMainApplicationClass();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><br></p>
-<h3 id="ApplicationEvent"><a href="#ApplicationEvent" class="headerlink" title="ApplicationEvent"></a>ApplicationEvent</h3><p><code>SpringBoot</code> 中使用了很多 <code>Event</code> 去响应容器状态，而 <code>ApplicationEvent</code> 为多个组件 bean 提供了消息通信的支持，其中就包括了接下来在 <code>run( )</code> 使用到的 <code>SpringApplicationEvent</code> ,它实现了全局的 <code>base ApplicationEvent</code>，并扩展为多个 Spring 启动中的事件 Event，如下：</p>
-<ol>
-<li><strong>ApplicationContextInitializedEvent</strong>  </li>
-<li><strong>ApplicationEnvironmentPreparedEvent</strong>  </li>
-<li><strong>ApplicationPreparedEvent</strong></li>
-<li><strong>ApplicationStartedEvent</strong></li>
-<li><strong>ApplicationReadyEvent</strong></li>
-<li><strong>ApplicationFailedEvent</strong></li>
-<li><strong>ApplicationStartingEvent</strong></li>
-</ol>
-<p><img src="/images/springboot/spring-boot-extend-applicationEvent.png" alt></p>
-<p><br></p>
-<p><strong>事件的传递过程如下：</strong></p>
-<ol>
-<li>SpringApplicationRunListener 调用对应的操作如 ( starting, running, contextLoad… )</li>
-<li>SpringApplicationRunListener 内部针对不同的事件，遍历内部集合调用对应的方法，具体实现类为 EventPublishingRunListener 调用</li>
-<li>EventPublishingRunListener  将对应的操作 ( starting, environmentPrepared.. ) 封装成对应的事件并通过属性 initialMulticaster push 广播出去</li>
-<li>最后广播出去的事件如 ( ApplicationStartingEvent ) 会被 SpringApplication 中的 listeners 属性监听处理</li>
-</ol>
-<p><br></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// SpringApplication.class</span><br><span class="line">public ConfigurableApplicationContext run(String... args) &#123;</span><br><span class="line">	listeners.starting();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// SpringApplicationRunListeners </span><br><span class="line">public void starting() &#123;</span><br><span class="line">        Iterator var1 = this.listeners.iterator();</span><br><span class="line"></span><br><span class="line">        while(var1.hasNext()) &#123;</span><br><span class="line">            SpringApplicationRunListener listener = (SpringApplicationRunListener)var1.next();</span><br><span class="line">            listener.starting();</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// EventPublishingRunListeners.class</span><br><span class="line">public void starting() &#123;</span><br><span class="line">        this.initialMulticaster.multicastEvent(new ApplicationStartingEvent(this.application, this.args));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-        
-          <div class="more-link">
-            <a href="/2019/10/12/SpringBoot启动分析-run/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2019/10/10/SpringBoot启动分析-@SpringBootApplication/">SpringBoot启动过程 - @SpringBootApplication</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2019-10-10T11:48:56.000Z" itemprop="datePublished">
-    2019-10-10
-  </time>
-  
-  | 
-  <ul>
     
-  <li class="meta-text">
-  { <a href="/tags/Spring/">Spring</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/SpringBoot/">SpringBoot</a> }
-  </li>
-
-
-  </ul>
-  
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p><strong>SpringBoot 的启动过程如下：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">public class SpringbootlLearningApplication &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(SpringbootlLearningApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  SpringBoot 简化了大量的配置的信息，几行代码就将 Spring Boot 服务启动，具体观察一下，有两部分指的注意：</p>
-<ol>
-<li>@SpringBootApplication 注解去指定启动类</li>
-<li>SpringApplication.run(SpringbootLearingApplication.class, args)  启动 Spring 容器</li>
-</ol>
-<p><br></p>
-<h2 id="SpringBootApplication"><a href="#SpringBootApplication" class="headerlink" title="@SpringBootApplication"></a>@SpringBootApplication</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Target(&#123;ElementType.TYPE&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">@Inherited</span><br><span class="line">@SpringBootConfiguration</span><br><span class="line">@EnableAutoConfiguration</span><br><span class="line">@ComponentScan(</span><br><span class="line">    excludeFilters = &#123;@Filter(</span><br><span class="line">    type = FilterType.CUSTOM,</span><br><span class="line">    classes = &#123;TypeExcludeFilter.class&#125;</span><br><span class="line">), @Filter(</span><br><span class="line">    type = FilterType.CUSTOM,</span><br><span class="line">    classes = &#123;AutoConfigurationExcludeFilter.class&#125;</span><br><span class="line">)&#125;</span><br><span class="line">)</span><br><span class="line">public @interface SpringBootApplication &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到，这里 <strong>@SpringBootApplication</strong> 是一个组合注解，它包含了以下三个重要的注解：</p>
-<ol>
-<li><strong>@SpringBootConfiguration</strong></li>
-<li><strong>@EnableAutoConfiguration</strong></li>
-<li><strong>@ComponentScan</strong></li>
-</ol>
-<p><br></p>
-<h4 id="SpringBootConfiguration"><a href="#SpringBootConfiguration" class="headerlink" title="@SpringBootConfiguration"></a>@SpringBootConfiguration</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Target(&#123;ElementType.TYPE&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">@Configuration</span><br><span class="line">public @interface SpringBootConfiguration &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看出，<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/SpringBootConfiguration.html" target="_blank" rel="noopener">@SpringBootConfiguration</a> 实际上就是一个配置注解，与 @Configuration 不同的是，一个应用程序中只能使用一个 @SpringBootConfiguration，而在我们启动 SpringBootApplication 的时候就已经开启配置，而 @Configuration 可以根据需要进行 JavaConfig 的方式进行多个实例配置</p>
-<p><br></p>
-<h3 id="EnableAutoConfiguration"><a href="#EnableAutoConfiguration" class="headerlink" title="@EnableAutoConfiguration"></a>@EnableAutoConfiguration</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@Target(&#123;ElementType.TYPE&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">@Inherited</span><br><span class="line">@AutoConfigurationPackage</span><br><span class="line">@Import(&#123;AutoConfigurationImportSelector.class&#125;)</span><br><span class="line">public @interface EnableAutoConfiguration &#123;</span><br><span class="line">    String ENABLED_OVERRIDE_PROPERTY = &quot;spring.boot.enableautoconfiguration&quot;;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt;[] exclude() default &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    String[] excludeName() default &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>@EnableAutoConfiguration这个复合annotation 的主要作用是开启容器的自动配置功能，而具体由 @AutoConfigurationPackage 和 @Import({AutoConfigurationImportSelector.class}) 实现。  </p>
-        
-          <div class="more-link">
-            <a href="/2019/10/10/SpringBoot启动分析-@SpringBootApplication/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
 </article>
 
-    </li>
   
-</ul>
-
-
+</div>
 
             <footer>
     <div>© 2016 - John Doe </div>
