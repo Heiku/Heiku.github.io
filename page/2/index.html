@@ -67,6 +67,50 @@
     <header class="title">
       
         <h1>
+          <a href="/2018/07/29/抽象工厂模式/">Abstract factory pattern</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2018-07-28T16:49:45.000Z" itemprop="datePublished">
+    2018-07-29
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/设计模式/">设计模式</a> }
+  </li>
+
+
+  </ul>
+  
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p><strong>概念</strong></p>
+<p>抽象工厂模式 提供了一种方式封装一组独立的工厂有一个共同的主题，而无需指定他们的具体类，即提供接口，用于创建相关或依赖对象的类。</p>
+<p><strong>举例</strong></p>
+<p>之前提到了 工厂方法模式，区分这两种模式的点在于 工厂方法 -&gt; 单一产品，而 抽象工厂 -&gt; 产品族，对于下面的例子，组件工厂类可以抽分为两种工厂，分别为生成高质量组件的工厂(HighQualityFactory) 和 生成廉价组件的工厂(LowQualityFactory)，工厂生成的是产品族，一个工厂可以生成多种类别的组件，根据组件的高质量 或 廉价 两种属性确定对应的工厂。</p>
+        
+          <div class="more-link">
+            <a href="/2018/07/29/抽象工厂模式/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2018/07/27/工厂方法模式/">Factory method pattern</a>
         </h1>
       
@@ -123,11 +167,11 @@
   <ul>
     
   <li class="meta-text">
-  { <a href="/tags/LinkedHashMap/">LinkedHashMap</a> }
+  { <a href="/tags/Java/">Java</a> }
   </li>
 
   <li class="meta-text">
-  { <a href="/tags/Java/">Java</a> }
+  { <a href="/tags/LinkedHashMap/">LinkedHashMap</a> }
   </li>
 
   <li class="meta-text">
@@ -441,6 +485,21 @@
 <script>
 var sp = new Pager('data-pager-shell')
 
-</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
