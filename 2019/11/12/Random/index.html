@@ -71,7 +71,7 @@
 <h3 id="伪随机算法"><a href="#伪随机算法" class="headerlink" title="伪随机算法"></a>伪随机算法</h3><ul>
 <li>线性同余方法（Linear Congruential Generator）LCG</li>
 <li>梅森旋转算法（Mersenne twister） MT</li>
-<li>M-sequence（Maximum length sequence） MLS</li>
+<li>M-sequence（Maximum length sequence） MLS<br><br></li>
 </ul>
 <h3 id="LCG"><a href="#LCG" class="headerlink" title="LCG"></a>LCG</h3><p><img src="/images/random/linear-congruential-form.jpg" alt></p>
 <p>随机数的生成采用了递归公式，这里的 $ X_n $ 表示第 n 个数，$ X_n+1 $ 表示由上一个随机数得到的当前数值，变量 a, c, m 都是常数，LCG 的周期最大为 m，但大部分情况下都会小于 m，要令 LCG 达到最大周期，需要满足以下条件：</p>
@@ -124,11 +124,11 @@
   </li>
 
   <li class="meta-text">
-  { <a href="/tags/Ramdom/">Ramdom</a> }
+  { <a href="/tags/源码分析/">源码分析</a> }
   </li>
 
   <li class="meta-text">
-  { <a href="/tags/JDK/">JDK</a> }
+  { <a href="/tags/Ramdom/">Ramdom</a> }
   </li>
 
 
@@ -156,21 +156,6 @@
 <script>
 var sp = new Pager('data-pager-shell')
 
-</script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
